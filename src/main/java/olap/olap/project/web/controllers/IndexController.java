@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import olap.olap.project.model.MultiDim;
 import olap.olap.project.model.db.TableCreator;
 import olap.olap.project.web.command.UploadXmlForm;
+import olap.olap.project.xml.MultidimCubeToMDXUtils;
 import olap.olap.project.xml.XmlConverter;
 
 import org.dom4j.DocumentException;
@@ -63,6 +64,7 @@ public class IndexController {
 			//TODO levantar las tablas y crear el archivo
 			MultiDim xmlDocument = parser.parse(tmpFile);
 			xmlDocument.print();
+			MultidimCubeToMDXUtils.convertToMDX(xmlDocument);
 			
 		}
 		mav.setViewName("redirect:" + req.getServletPath()

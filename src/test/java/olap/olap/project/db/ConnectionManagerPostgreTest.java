@@ -5,9 +5,6 @@ import java.sql.Connection;
 import junit.framework.Assert;
 import olap.olap.project.model.db.ConnectionManagerPostgre;
 
-import org.junit.Before;
-import org.junit.Test;
-
 public class ConnectionManagerPostgreTest {
 
 	private ConnectionManagerPostgre manager;
