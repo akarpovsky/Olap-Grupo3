@@ -18,22 +18,25 @@ public class MultidimCubeToMDXUtils {
 	/**
 	 * Converts a MultiDim to MDX
 	 */
-	public static void convertToMDX(MultiDim multidim) throws IOException {
+	public static String convertToMDX(MultiDim multidim) throws IOException {
 		Document out = DocumentHelper.createDocument();
 
 		Connection connection = null;
+		StringBuilder sb = new StringBuilder();
+
 		System.out.println("\n*** Creación de sentencias MDX *** ");
 		/* Itarate over dimensions and create Dimension Tables */
 		for(Dimension dimension : multidim.getDimensions()){
-			createDimensionTable(dimension);
+			createDimensionTable(sb, dimension);
 		}
+		
+		return sb.toString();
 		
 	}
 
-	private static void createDimensionTable(Dimension dimension) {
+	private static void createDimensionTable(StringBuilder sb, Dimension dimension) {
 		// Se asume que la tabla no es vacia!
 		
-		StringBuilder sb = new StringBuilder();
 		sb.append("CREATE TABLE " + dimension.getName() + " (\n");
 		
 		// Creo los campos para el nivel inicial
@@ -48,7 +51,7 @@ public class MultidimCubeToMDXUtils {
 		sb.deleteCharAt(sb.length()-2);
 
 		
-		sb.append("\n);");
+		sb.append("\n);\n");
 		System.out.println(sb.toString());
 	}
 

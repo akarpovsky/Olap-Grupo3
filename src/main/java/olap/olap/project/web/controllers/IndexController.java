@@ -64,13 +64,17 @@ public class IndexController {
 			//TODO levantar las tablas y crear el archivo
 			MultiDim xmlDocument = parser.parse(tmpFile);
 			xmlDocument.print();
-			MultidimCubeToMDXUtils.convertToMDX(xmlDocument);
-			
+			String MDXtables = MultidimCubeToMDXUtils.convertToMDX(xmlDocument);
+			ModelAndView mav2 = new ModelAndView("/index/show_tables");
+			mav2.addObject("MDXtables", MDXtables.replace("\n", "<br />")
+													.replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"));	
+			return mav2;
 		}
-		mav.setViewName("redirect:" + req.getServletPath()
-				+ "/index/show_tables");
-		System.out.println("----------redirecting !!!!");
-		return mav;
+//		mav.setViewName("redirect:" + req.getServletPath()
+//				+ "/index/show_tables");
+//		
+//		System.out.println("----------redirecting !!!!");
+//		return mav;
 	}
 
 	@RequestMapping(method = RequestMethod.GET)
