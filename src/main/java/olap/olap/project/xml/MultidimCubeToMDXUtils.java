@@ -3,9 +3,11 @@ package olap.olap.project.xml;
 import java.io.IOException;
 import java.sql.Connection;
 
+import olap.olap.project.model.Cube;
 import olap.olap.project.model.Dimension;
 import olap.olap.project.model.Hierarchy;
 import olap.olap.project.model.Level;
+import olap.olap.project.model.Measure;
 import olap.olap.project.model.MultiDim;
 import olap.olap.project.model.Property;
 
@@ -30,10 +32,21 @@ public class MultidimCubeToMDXUtils {
 			createDimensionTable(sb, dimension);
 		}
 		
+		createFactTable(sb, multidim.getCube());
+		
 		return sb.toString();
 		
 	}
 
+	private static void createFactTable(StringBuilder sb, Cube cube) {
+		sb.append("CREATE TABLE " + cube.getName() + "_fact (\n");
+		for(Measure m: cube.getMeasures()){
+			sb.append("\t\""+ m.getName() + "\" " + (m.getType().equals("string") ? "char[]":m.getType()) + ",\n");
+		}
+		sb.append("\n);\n");
+
+	}
+	
 	private static void createDimensionTable(StringBuilder sb, Dimension dimension) {
 		// Se asume que la tabla no es vacia!
 		
