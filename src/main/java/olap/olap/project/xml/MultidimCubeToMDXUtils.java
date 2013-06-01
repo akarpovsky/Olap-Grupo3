@@ -66,14 +66,13 @@ public class MultidimCubeToMDXUtils {
 		}
 		
 		// Borro ultima coma
-		pks.deleteCharAt(pks.length()-1);
-		sb.append("\n\tPRIMARY KEY(" + pks + ")\n");
-		
+		if(pks.length() > 0){
+			pks.deleteCharAt(pks.length()-1);
+			sb.append("\n\tPRIMARY KEY(" + pks + ")\n");
+		}
 		
 	}
 
-//	PRIMARY KEY(question_id, tag_id)
-	
 	private static void createDimensionTable(StringBuilder sb, String dimensionName, Dimension dimension) {
 		// Se asume que la tabla no es vacia!
 		

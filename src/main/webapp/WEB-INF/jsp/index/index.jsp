@@ -25,42 +25,46 @@
 <body>
 
 	<%@ include file="/WEB-INF/jsp/header.jsp"%>
-	<div class="container">
-
-		<div class="row-fluid">
-			<div class="span6">
-				<h3>OLAP_</h3>
-				<div class="thumb_image">
-					<img alt="Logo OLAP" src="<c:url value='/img/Cube_OLAP.png'/>" style=" height: 200; width: 180; ">
-				</div>
-           		<div class="caption pull-left">
-           			<p>Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
-					<p>Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Donec sed odio dui.</p>
-  			  	</div>
-         	   	<div class="clear"></div>
-         	   	
-				<p>Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
-				<p>Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Donec sed odio dui.</p>
-		    </div>
-			<div class="span6">
-				<h1>Cargar archivo XML_</h1>
-				<div class="well">
-					<form:form name="uploadxmlform" class="form-horizontal"
-						action="uploadXml" method="POST" enctype="multipart/form-data"
-						commandName="uploadxmlform">
-						<form:errors path="*" />
-						<fieldset>
-							<legend>Documento XML Multidim</legend>
-							<form:input type="file" class="input-xlarge" id="photo"
-										name="xml_doc" path="file" />
-							<div class="form-actions">
-								<input type="submit" class="btn btn-primary" value="Subir documento " />
+	<div class="container well">
+		<h1>Conexi&oacute;n con la base de datos</h1>
+		<c:if test="${couldNotConnectToDB }">
+					<h3>No se pudo conectar a la base de datos.</h3>
+				</c:if>
+				<form:form name="dbcredentialsform" class="form-horizontal span8 offset2"
+					action="connectToDB" method="POST"
+					commandName="dbcredentialsform">
+					<form:errors path="*" />
+					<fieldset>
+						<legend> </legend>
+						<div class="control-group">
+							<label class="control-label" for="xml_doc">URL DB </label>
+							<div class="controls">
+								<form:input type="text" class="input-xlarge" id="url_db"
+									name="url_db" path="url_db" />
+								<span>localhost:5432/postgres</span>
 							</div>
-						</fieldset>
-					</form:form>
-				</div>
-			</div>
-		</div>
+						</div>
+						<div class="control-group">
+							<label class="control-label" for="xml_doc">User </label>
+							<div class="controls">
+								<form:input type="text" class="input-xlarge" id="user_db"
+									name="user_db" path="user_db" />
+								<span>postgres</span>
+							</div>
+						</div>
+						<div class="control-group">
+							<label class="control-label" for="xml_doc">Password</label>
+							<div class="controls">
+								<form:input type="text" class="input-xlarge" id="password_db"
+									name="password_db" path="password_db" />
+								<span>postgres</span>
+							</div>
+						</div>												
+						<div class="form-actions">
+							<input type="submit" class="btn btn-primary" value="Conectar" />
+						</div>
+					</fieldset>
+				</form:form>
 	</div>
 	<%@ include file="/WEB-INF/jsp/footer.jsp"%>
 </body>

@@ -2,18 +2,28 @@ package olap.olap.project.model.db;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 public class TableCreator {
 
 	
+	private Connection conn;
 	
-	public TableCreator(){
+	public TableCreator(Connection conn){
+		this.conn = conn;
+	}
+	
+	public void createTables(String tables) throws SQLException{
+		PreparedStatement statement = this.conn.prepareStatement(tables);
+		statement.execute();
+	}
+	
+	public TableCreator(String url, String user, String password) throws Exception{
 		
-		try {
 			PreparedStatement statement;
-			final ConnectionManager connectionManager = ConnectionManagerPostgre
-					.getConnectionManager();
-			final Connection conn = connectionManager.getConnection();
+			final ConnectionManager connectionManager = ConnectionManagerPostgreWithCredentials
+					.setConnectionManagerWithCredentials(url, user, password);
+			final Connection conn = connectionManager.getConnectionWithCredentials();
 			System.out.println(connectionManager.toString());
 //			if (notif.isNew()) {
 //				statement = conn
@@ -41,8 +51,5 @@ public class TableCreator {
 //				statement.execute();
 //			}
 			connectionManager.closeConnection(conn);
-		}catch(Exception e){
-			e.printStackTrace();
-		}
 	}
 }

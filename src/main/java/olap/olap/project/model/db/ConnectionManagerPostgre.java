@@ -89,4 +89,14 @@ public class ConnectionManagerPostgre implements ConnectionManager {
 
 	}
 
+	//TODO: Fix me
+	public Connection getConnectionWithCredentials() throws Exception {
+		return null;
+	}
+
+	@Override
+	public String getConnectionString() {
+		return this.connectionString;
+	}
+
 }

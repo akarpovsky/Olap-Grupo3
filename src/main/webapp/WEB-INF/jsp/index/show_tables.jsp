@@ -27,6 +27,7 @@
 	<%@ include file="/WEB-INF/jsp/header.jsp"%>
 	<div class="container well">
 		<h1>Tablas MDX</h1>
+		<span class="">Conectado a <span class="badge badge-warning">${dburl}</span></span><br />
 		${MDXtables}
 	</div>
 	<%@ include file="/WEB-INF/jsp/footer.jsp"%>
