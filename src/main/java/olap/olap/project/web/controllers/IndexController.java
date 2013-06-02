@@ -42,7 +42,8 @@ public class IndexController {
 			try {
 				connectionManager.getConnectionWithCredentials();
 			} catch (SQLException e) {
-				e.printStackTrace();
+				mav.addObject("dbcredentialsform", form);
+				return mav;
 			}
 			mav.setViewName("redirect:" + req.getServletPath()
 					+ "/index/uploadxml");
