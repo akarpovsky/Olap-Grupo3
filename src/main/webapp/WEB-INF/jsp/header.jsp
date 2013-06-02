@@ -8,7 +8,7 @@
 				<spanclass="icon-bar"></span> 
 				<span class="icon-bar"></span>
 			</a>
-			<a class="brand" href="${pageContext.servletContext.contextPath}/bin/index/olap">MultidimToMDX</a>
+			<a class="brand" href="${pageContext.servletContext.contextPath}/bin/index/index">MultidimToMDX</a>
 			
 			<div class="nav-collapse">
 							<ul class="nav">

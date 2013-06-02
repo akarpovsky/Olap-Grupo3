@@ -1,7 +1,6 @@
 package olap.olap.project.web.controllers;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -12,7 +11,6 @@ import javax.servlet.http.HttpServletRequest;
 import olap.olap.project.model.MultiDim;
 import olap.olap.project.model.db.ConnectionManager;
 import olap.olap.project.model.db.ConnectionManagerPostgreWithCredentials;
-import olap.olap.project.model.db.TableCreator;
 import olap.olap.project.web.command.DBCredentialsForm;
 import olap.olap.project.web.command.UploadXmlForm;
 import olap.olap.project.xml.MultidimCubeToMDXUtils;
@@ -34,9 +32,24 @@ public class IndexController {
 	}
 
 	@RequestMapping(method = RequestMethod.GET)
-	protected ModelAndView olap(final DBCredentialsForm form)
+	protected ModelAndView index(final DBCredentialsForm form, HttpServletRequest req)
 			throws ServletException, IOException {
 		final ModelAndView mav = new ModelAndView("index/index");
+		
+		final ConnectionManager connectionManager = ConnectionManagerPostgreWithCredentials.getConnectionManagerWithCredentials();
+		
+		if(connectionManager != null){
+			try {
+				connectionManager.getConnectionWithCredentials();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			mav.setViewName("redirect:" + req.getServletPath()
+					+ "/index/uploadxml");
+			mav.addObject("uploadxmlform", new UploadXmlForm());
+			return mav;
+		}
+		
 		mav.addObject("dbcredentialsform", form);
 		return mav;
 	}
@@ -49,8 +62,8 @@ public class IndexController {
 		final ConnectionManager connectionManager = ConnectionManagerPostgreWithCredentials.getConnectionManagerWithCredentials();
 		
 		if(connectionManager == null){
-			System.out.println("aca1");
-			mav.setViewName("index/olap");
+			mav.setViewName("redirect:" + req.getServletPath()
+					+ "/index/index");
 			return mav;
 		}
 		
@@ -58,10 +71,12 @@ public class IndexController {
 			final Connection conn = connectionManager.getConnectionWithCredentials();
 			mav.addObject("dburl", connectionManager.getConnectionString());
 		} catch (Exception e) {
-			e.printStackTrace();
+			ModelAndView errorMav = new ModelAndView("error/error");
+			errorMav.addObject("errorDescription", "No se ha podido establecer la conexión con la base de datos");
+			errorMav.addObject("errorMessage", e.getMessage());
+			return errorMav;
 		}
 		
-		mav.setViewName("index/uploadxml");
 		mav.addObject("uploadxmlform", form);
 		return mav;
 	}
@@ -84,7 +99,8 @@ public class IndexController {
 			return mav;
 		} else {
 			try {
-				TableCreator tc = new TableCreator(form.getUrl_db(), form.getUser_db(), form.getPassword_db());
+				final ConnectionManager connectionManager = ConnectionManagerPostgreWithCredentials.setConnectionManagerWithCredentials(form.getUrl_db(), form.getUser_db(), form.getPassword_db());
+				connectionManager.getConnectionWithCredentials();
 			} catch (Exception e) {
 				mav.addObject("couldNotConnectToDB", true);
 				return mav;
@@ -93,15 +109,16 @@ public class IndexController {
 		
 		mav.setViewName("redirect:" + req.getServletPath()
 				+ "/index/uploadxml");
-		System.out.println("----------redirecting !!!!");
 		return mav;
 	}
 	
 	@RequestMapping(method = RequestMethod.POST)
-	public ModelAndView uploadXml(final HttpServletRequest req,
+	public ModelAndView uploadxml(final HttpServletRequest req,
 			final UploadXmlForm form, Errors errors) throws DocumentException,
 			IOException {
 		ModelAndView mav = new ModelAndView();
+		ModelAndView errorMav = new ModelAndView("error/error");
+
 		mav.addObject("uploadxmlform", form);
 		if (form.getFile() == null) {
 			errors.rejectValue("empty", "file");
@@ -114,51 +131,35 @@ public class IndexController {
 			xmlfile.transferTo(tmpFile);
 			XmlConverter parser = new XmlConverter();
 			
-			//TODO remove - for parsing
-			FileReader fr = null;
-			fr = new FileReader(tmpFile);
-			int inChar;
-			while ((inChar = fr.read()) != -1) {
-				System.out.printf("%c", inChar);
+			final ConnectionManager connectionManager = ConnectionManagerPostgreWithCredentials.getConnectionManagerWithCredentials();
+			Connection conn;
+			try {
+				conn = connectionManager.getConnectionWithCredentials();
+			} catch (Exception e) {
+				errorMav.addObject("errorDescription", "No se ha podido establecer la conexión con la base de datos");
+				errorMav.addObject("errorMessage", e.getMessage());
+				return errorMav;
 			}
+
 			
-			//TODO levantar las tablas y crear el archivo
 			MultiDim xmlDocument = parser.parse(tmpFile);
 			xmlDocument.print();
-			String MDXtables = MultidimCubeToMDXUtils.convertToMDX(xmlDocument);
+			String MDXtables = null;
+			try {
+				MDXtables = MultidimCubeToMDXUtils.convertToMDXAndCreateSchema(xmlDocument, conn);
+			} catch (SQLException e) {
+				errorMav.addObject("errorDescription", "No se ha podido crear el esquema en la base de datos provista.");
+				errorMav.addObject("errorMessage", e.getMessage());
+				errorMav.addObject("errorCode", e.getErrorCode());
+				return errorMav;
+			}
 			ModelAndView mav2 = new ModelAndView("/index/show_tables");
+			mav2.addObject("dburl", connectionManager.getConnectionString());
 			mav2.addObject("MDXtables", MDXtables.replace("\n", "<br />")
 													.replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"));
 
-			final ConnectionManager connectionManager = ConnectionManagerPostgreWithCredentials.getConnectionManagerWithCredentials();
-			
-			if(connectionManager == null){
-				mav.setViewName("redirect:" + req.getServletPath()
-						+ "/index/index");
-				return mav;
-			}
-			
-			try {
-				final Connection conn = connectionManager.getConnectionWithCredentials();
-				mav2.addObject("dburl", connectionManager.getConnectionString());
-				TableCreator tc = new TableCreator(conn);
-				//TODO: Para que funcione: MDXtables..replace("geometry", "integer")
-				tc.createTables(MDXtables);
-
-			} catch (SQLException sqlexception){
-				System.out.println("SQL Exception!!");
-				sqlexception.printStackTrace();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			
 			return mav2;
 		}
-//		mav.setViewName("redirect:" + req.getServletPath()
-//				+ "/index/show_tables");
-//		
-//		System.out.println("----------redirecting !!!!");
-//		return mav;
 	}
 
 	@RequestMapping(method = RequestMethod.GET)
@@ -167,9 +168,11 @@ public class IndexController {
 		final ConnectionManager connectionManager = ConnectionManagerPostgreWithCredentials.getConnectionManagerWithCredentials();
 		
 		if(connectionManager == null){
-			mav.setViewName("redirect:" + req.getServletPath()
-					+ "/index/index");
-			return mav;
+			ModelAndView errorMav = new ModelAndView("error/error");
+			errorMav.addObject("errorDescription", "Acceso no autorizado.");
+			errorMav.addObject("errorMessage", "No deberia entrar a este sitio sin antes tener abierta la conexion con la base de datos.");
+			errorMav.addObject("errorCode", "403");
+			return errorMav;
 		}
 		
 		try {
@@ -178,7 +181,6 @@ public class IndexController {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-//		TableCreator tc = new TableCreator();
 		return mav;
 	}
 

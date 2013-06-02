@@ -5,7 +5,7 @@ import java.sql.SQLException;
 
 public interface ConnectionManager {
 
-	public Connection getConnectionWithCredentials() throws Exception;
+	public Connection getConnectionWithCredentials() throws SQLException;
 
 	public void closeConnection(Connection conn) throws SQLException;
 

@@ -1,7 +1,8 @@
 package olap.olap.project.xml;
 
-import java.io.IOException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.Map.Entry;
 
 import olap.olap.project.model.Cube;
@@ -12,19 +13,26 @@ import olap.olap.project.model.Measure;
 import olap.olap.project.model.MultiDim;
 import olap.olap.project.model.Property;
 
-import org.dom4j.Document;
-import org.dom4j.DocumentHelper;
-
 public class MultidimCubeToMDXUtils {
 	
+	/**
+	 * Creates the schema in the DB with the user provided connection
+	 */
+	public static String convertToMDXAndCreateSchema(MultiDim multidim, Connection conn) throws SQLException{
+		if(conn == null){
+        	throw new RuntimeException("Invalid or null connection provided.");
+		}
+		String tablesCreation = convertToMDX(multidim);
+		PreparedStatement statement = conn.prepareStatement(tablesCreation.replace("geometry", "integer"));
+		statement.execute();
+		return tablesCreation;
+		
+	}
 	
 	/**
 	 * Converts a MultiDim to MDX
 	 */
-	public static String convertToMDX(MultiDim multidim) throws IOException {
-		Document out = DocumentHelper.createDocument();
-
-		Connection connection = null;
+	public static String convertToMDX(MultiDim multidim) {
 		StringBuilder sb = new StringBuilder();
 
 		System.out.println("\n*** Creación de sentencias MDX *** ");
@@ -38,7 +46,7 @@ public class MultidimCubeToMDXUtils {
 		return sb.toString().toLowerCase();
 		
 	}
-
+	
 	private static void createFactTable(StringBuilder sb, Cube cube) {
 		sb.append("CREATE TABLE " + cube.getName() + "_fact (\n");
 		sb.append("\n\t/* Measures*/\n\n");

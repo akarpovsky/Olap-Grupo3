@@ -50,14 +50,12 @@ public class ConnectionManagerPostgreWithCredentials implements
 
 	}
 
-	public Connection getConnectionWithCredentials() throws Exception {
-		// if (this.connection == null || this.connection.isClosed()) {
+	public Connection getConnectionWithCredentials() throws SQLException  {
 		Connection connection;
 		final Properties props = new Properties();
 		props.setProperty("user", this.username);
 		props.setProperty("password", this.password);
 		connection = this.driver.connect(this.connectionString, props);
-		// }
 		return connection;
 	}
 

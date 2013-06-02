@@ -46,7 +46,7 @@
 				<h1>Cargar archivo XML_</h1>
 				<div class="well">
 					<form:form name="uploadxmlform" class="form-horizontal"
-						action="uploadXml" method="POST" enctype="multipart/form-data"
+						action="uploadxml" method="POST" enctype="multipart/form-data"
 						commandName="uploadxmlform">
 						<form:errors path="*" />
 						<fieldset>
