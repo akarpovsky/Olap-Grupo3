@@ -78,12 +78,13 @@ public class XmlConverter {
 				if(p.isPK()){
 					dim.addAttribute("foreignkKey", p.getName());
 					pk = p.getName();
-					pkType = p.getType();
+					pkType =  Attribute.valueOf(p.getType().toUpperCase()).toString();
 					break; //Lo hace sólo para el primero, si es compuesta se debe cambiar.
 				}
 			}
 			if(dimension.getHierarchies()==null || dimension.getHierarchies().isEmpty()){
 				Element h = dim.addElement("Hierarchy");
+				h.addAttribute("name", pk);
 				h.addAttribute("hasAll", "true");
 				h.addAttribute("allMemberName", "All" + dimName);
 				h.addAttribute("primaryKey", pk);
@@ -105,12 +106,14 @@ public class XmlConverter {
 			}
 		}
 		
-		Element tableElem = cubeElem.addElement("Relation");
+//		Element tableElem = cubeElem.addElement("Relation");
 		//Element table = cubeElem.addElement("Table");
 		
 		for (Measure m : cube.getMeasures()) {
 			Element measure = cubeElem.addElement("Measure");
-			measure.addAttribute("aggregator", m.getAgg());
+			String aggName = m.getAgg();
+			if(aggName.equals("st_union")) aggName = "sum";
+			measure.addAttribute("aggregator", aggName);
 			measure.addAttribute("name", m.getName());
 			measure.addAttribute("datatype", Attribute.valueOf(m.getType().toUpperCase()).toString());
 		}
@@ -123,6 +126,7 @@ public class XmlConverter {
 	
 	private void handleHierarchy(Element dim, Hierarchy hierarchy, String pk, String pktype, String dimName) {
 		Element h = dim.addElement("Hierarchy");
+		h.addAttribute("name", h.getName());
 		h.addAttribute("hasAll", "true");
 		h.addAttribute("allMemberName", "All" + h.getName());
 		h.addAttribute("primaryKey", pk);
@@ -141,12 +145,12 @@ public class XmlConverter {
 		for(Property p : l.getProperties()) {
 			if(p.isPK()){
 				level.addAttribute("column", l.getName()+"-"+p.getName());
-				level.addAttribute("type", p.getType());
+				level.addAttribute("type",  Attribute.valueOf(p.getType().toUpperCase()).toString());
 			}
 			Element prop = level.addElement("Property");
 			prop.addAttribute("name", l.getName()+"-"+p.getName());
 			prop.addAttribute("column", l.getName()+"-"+p.getName());
-			prop.addAttribute("type", p.getType());
+			prop.addAttribute("type", Attribute.valueOf(p.getType().toUpperCase()).toString());
 		}
 	}
 	

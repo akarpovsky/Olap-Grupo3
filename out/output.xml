@@ -1,2 +1,90 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Schema><Cube name="contaminacion"><measure aggregator="avg" name="emisionmala" datatype="numeric"/><measure aggregator="sum" name="emision" datatype="numeric"/><measure aggregator="st_union" name="nube" datatype="geometry"/><dimension name="inicio"><hierarchy name="calendar"><level name="Year-esBisiesto" column="Year-esBisiesto"/><level name="Year-anio" column="Year-anio"/><level name="Month-Nombre" column="Month-Nombre"/><level name="Month-Mes" column="Month-Mes"/></hierarchy></dimension><dimension name="sustanciaDim"/><dimension name="fin"><hierarchy name="calendar"><level name="Year-esBisiesto" column="Year-esBisiesto"/><level name="Year-anio" column="Year-anio"/><level name="Month-Nombre" column="Month-Nombre"/><level name="Month-Mes" column="Month-Mes"/></hierarchy></dimension><dimension name="fabrica"><hierarchy name="Categoria"><level name="Empresa-Nombre" column="Empresa-Nombre"/><level name="Empresa-FactAnual" column="Empresa-FactAnual"/><level name="Rubro-tipoID" column="Rubro-tipoID"/><level name="Rubro-tipoDesc" column="Rubro-tipoDesc"/></hierarchy><hierarchy name="Geo location"><level name="Pais-nombre" column="Pais-nombre"/><level name="Pais-the_geom" column="Pais-the_geom"/><level name="Ciudad-poblacion" column="Ciudad-poblacion"/><level name="Ciudad-nombre" column="Ciudad-nombre"/></hierarchy></dimension></Cube></Schema>
+<!DOCTYPE Schema SYSTEM "mondrian.dtd">
+<Schema name="contaminacion">
+	<Cube name="contaminacion" cache="true" enabled="true">
+		<Table name="contaminacionFact" />
+		<Dimension name="iniciotemporal" foreignkKey="dia">
+			<Hierarchy name="Hierarchy" hasAll="true" allMemberName="AllHierarchy"
+				primaryKey="dia">
+				<Table name="iniciotemporal" />
+				<Level name="Month" uniqueMembers="false" levelType="Regular"
+					hideMemberIf="Never" column="Month-Mes" type="Numeric">
+					<Property name="Month-Mes" column="Month-Mes" type="Numeric" />
+					<Property name="Month-Nombre" column="Month-Nombre" type="String" />
+				</Level>
+				<Level name="Year" uniqueMembers="false" levelType="Regular"
+					hideMemberIf="Never" column="Year-anio" type="Numeric">
+					<Property name="Year-anio" column="Year-anio" type="Numeric" />
+					<Property name="Year-esBisiesto" column="Year-esBisiesto"
+						type="Numeric" />
+				</Level>
+			</Hierarchy>
+		</Dimension>
+		<Dimension name="sustanciaDimsustancia" foreignkKey="denominacion">
+			<Hierarchy name="denominacion" hasAll="true"
+				allMemberName="AllsustanciaDimsustancia" primaryKey="denominacion">
+				<Table name="sustanciaDimsustancia" />
+				<Level name="sustanciaDimsustancia" type="String"
+					uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
+					<Property name="denominacion" column="denominacion" type="String" />
+				</Level>
+			</Hierarchy>
+		</Dimension>
+		<Dimension name="fintemporal" foreignkKey="dia">
+			<Hierarchy name="Hierarchy" hasAll="true" allMemberName="AllHierarchy"
+				primaryKey="dia">
+				<Table name="fintemporal" />
+				<Level name="Month" uniqueMembers="false" levelType="Regular"
+					hideMemberIf="Never" column="Month-Mes" type="Numeric">
+					<Property name="Month-Mes" column="Month-Mes" type="Numeric" />
+					<Property name="Month-Nombre" column="Month-Nombre" type="String" />
+				</Level>
+				<Level name="Year" uniqueMembers="false" levelType="Regular"
+					hideMemberIf="Never" column="Year-anio" type="Numeric">
+					<Property name="Year-anio" column="Year-anio" type="Numeric" />
+					<Property name="Year-esBisiesto" column="Year-esBisiesto"
+						type="Numeric" />
+				</Level>
+			</Hierarchy>
+		</Dimension>
+		<Dimension name="fabricaFabrica" foreignkKey="Lat">
+			<Hierarchy name="Hierarchy" hasAll="true" allMemberName="AllHierarchy"
+				primaryKey="Lat">
+				<Table name="fabricaFabrica" />
+				<Level name="Ciudad" uniqueMembers="false" levelType="Regular"
+					hideMemberIf="Never" column="Ciudad-nombre" type="String">
+					<Property name="Ciudad-poblacion" column="Ciudad-poblacion"
+						type="Numeric" />
+					<Property name="Ciudad-nombre" column="Ciudad-nombre"
+						type="String" />
+				</Level>
+				<Level name="Pais" uniqueMembers="false" levelType="Regular"
+					hideMemberIf="Never" column="Pais-nombre" type="String">
+					<Property name="Pais-the_geom" column="Pais-the_geom"
+						type="Integer" />
+					<Property name="Pais-nombre" column="Pais-nombre" type="String" />
+				</Level>
+			</Hierarchy>
+			<Hierarchy name="Hierarchy" hasAll="true" allMemberName="AllHierarchy"
+				primaryKey="Lat">
+				<Table name="fabricaFabrica" />
+				<Level name="Empresa" uniqueMembers="false" levelType="Regular"
+					hideMemberIf="Never" column="Empresa-Nombre" type="String">
+					<Property name="Empresa-Nombre" column="Empresa-Nombre"
+						type="String" />
+					<Property name="Empresa-FactAnual" column="Empresa-FactAnual"
+						type="Numeric" />
+				</Level>
+				<Level name="Rubro" uniqueMembers="false" levelType="Regular"
+					hideMemberIf="Never" column="Rubro-tipoID" type="Numeric">
+					<Property name="Rubro-tipoDesc" column="Rubro-tipoDesc"
+						type="String" />
+					<Property name="Rubro-tipoID" column="Rubro-tipoID" type="Numeric" />
+				</Level>
+			</Hierarchy>
+		</Dimension>
+		<Measure aggregator="sum" name="nube" datatype="Integer" />
+		<Measure aggregator="sum" name="emision" datatype="Numeric" />
+		<Measure aggregator="avg" name="emisionmala" datatype="Numeric" />
+	</Cube>
+</Schema>

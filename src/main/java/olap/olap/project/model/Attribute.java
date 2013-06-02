@@ -2,7 +2,7 @@ package olap.olap.project.model;
 
 public enum Attribute {
 
-	STRING("String"), NUMERIC("Numeric"), INTEGER("Integer"), BOOLEAN("Boolean"), DATE("Date"), TIME("Time"), TIMESTAMP("Timestamp");
+	STRING("String"), NUMERIC("Numeric"), INTEGER("Integer"), BOOLEAN("Boolean"), DATE("Date"), TIME("Time"), TIMESTAMP("Timestamp"),GEOMETRY("Integer");
 	
 	private String name;
 	
