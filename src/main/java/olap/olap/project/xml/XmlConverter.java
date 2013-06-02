@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
+import olap.olap.project.model.Attribute;
 import olap.olap.project.model.Cube;
 import olap.olap.project.model.Dimension;
 import olap.olap.project.model.Hierarchy;
@@ -51,31 +52,67 @@ public class XmlConverter {
 	
 	/**
 	 * Converts a MultiDim to a GeoMondrian XML
-     * Hay que leer bien http://mondrian.pentaho.com/documentation/schema.php#Star_schemas creo q no hice las cosas muy bien
-     * igual esta x la mitad
+     * Lo hice entero, falta debuguearlo pero a primera vista parece estar mas o menos bien. 
 	 */
 	public void generateXml(MultiDim multiDim, String fileName) throws IOException {
 		Document out = DocumentHelper.createDocument();
-
+		out = out.addDocType("Schema", null, "mondrian.dtd");
 		Element schema = out.addElement("Schema");
+		schema.addAttribute("name",multiDim.getCube().getName());
 		Element cubeElem = schema.addElement("Cube");
 		Cube cube = multiDim.getCube();
 		cubeElem.addAttribute("name", cube.getName());
+		cubeElem.addAttribute("cache", "true");
+		cubeElem.addAttribute("enabled", "true");
+		Element factTable = cubeElem.addElement("Table");
+		factTable.addAttribute("name", cube.getName() + "Fact");
+		
+		for (Entry<String, Dimension> entry : multiDim.getCube().getDimensions().entrySet()) {
+			String pk = "";
+			String pkType = "";
+			String dimName = entry.getKey() + entry.getValue().getName();
+			Element dim = cubeElem.addElement("Dimension");
+			Dimension dimension = entry.getValue();
+			dim.addAttribute("name", dimName);
+			for(Property p: dimension.getLevel().getProperties()){
+				if(p.isPK()){
+					dim.addAttribute("foreignkKey", p.getName());
+					pk = p.getName();
+					pkType = p.getType();
+					break; //Lo hace sólo para el primero, si es compuesta se debe cambiar.
+				}
+			}
+			if(dimension.getHierarchies()==null || dimension.getHierarchies().isEmpty()){
+				Element h = dim.addElement("Hierarchy");
+				h.addAttribute("hasAll", "true");
+				h.addAttribute("allMemberName", "All" + dimName);
+				h.addAttribute("primaryKey", pk);
+				h.addElement("Table").addAttribute("name", dimName);
+				Element level = h.addElement("Level");
+				level.addAttribute("name", dimName);
+				level.addAttribute("type", pkType);
+				level.addAttribute("uniqueMembers", "false");
+				level.addAttribute("levelType", "Regular");
+				level.addAttribute("hideMemberIf", "Never");
+				Element prop = level.addElement("Property");
+				prop.addAttribute("name", pk);
+				prop.addAttribute("column", pk);
+				prop.addAttribute("type", pkType);
+				
+			}
+			for(Hierarchy h : dimension.getHierarchies()) {
+				handleHierarchy(dim, h,pk,pkType,dimName);
+			}
+		}
+		
+		Element tableElem = cubeElem.addElement("Relation");
 		//Element table = cubeElem.addElement("Table");
 		
 		for (Measure m : cube.getMeasures()) {
-			Element measure = cubeElem.addElement("measure");
+			Element measure = cubeElem.addElement("Measure");
 			measure.addAttribute("aggregator", m.getAgg());
 			measure.addAttribute("name", m.getName());
-			measure.addAttribute("datatype", m.getType());
-		}
-		for (Entry<String, Dimension> entry : cube.getDimensions().entrySet()) {
-			Element dim = cubeElem.addElement("dimension");
-			Dimension dimension = entry.getValue();
-			dim.addAttribute("name", entry.getKey());
-			for(Hierarchy h : dimension.getHierarchies()) {
-				handleHierarchy(dim, h);
-			}
+			measure.addAttribute("datatype", Attribute.valueOf(m.getType().toUpperCase()).toString());
 		}
 		XMLWriter writer = new XMLWriter(
 				new FileWriter( fileName )
@@ -84,19 +121,32 @@ public class XmlConverter {
 		writer.close();
 	}
 	
-	private void handleHierarchy(Element dim, Hierarchy h) {
-		Element hierarchy = dim.addElement("hierarchy");
-		hierarchy.addAttribute("name", h.getName());
-		for(Level l : h.getLevels()) {
-			handleLevel(hierarchy, l);
+	private void handleHierarchy(Element dim, Hierarchy hierarchy, String pk, String pktype, String dimName) {
+		Element h = dim.addElement("Hierarchy");
+		h.addAttribute("hasAll", "true");
+		h.addAttribute("allMemberName", "All" + h.getName());
+		h.addAttribute("primaryKey", pk);
+		h.addElement("Table").addAttribute("name", dimName);
+		for(Level l : hierarchy.getLevels()) {
+			handleLevel(h, l);
 		}
 	}
 	
 	private void handleLevel(Element hierarchy, Level l) {
+		Element level = hierarchy.addElement("Level");
+		level.addAttribute("name", l.getName());
+		level.addAttribute("uniqueMembers", "false");
+		level.addAttribute("levelType", "Regular");
+		level.addAttribute("hideMemberIf", "Never");
 		for(Property p : l.getProperties()) {
-			Element level = hierarchy.addElement("level");
-			level.addAttribute("name", l.getName()+"-"+p.getName());
-			level.addAttribute("column", l.getName()+"-"+p.getName());
+			if(p.isPK()){
+				level.addAttribute("column", l.getName()+"-"+p.getName());
+				level.addAttribute("type", p.getType());
+			}
+			Element prop = level.addElement("Property");
+			prop.addAttribute("name", l.getName()+"-"+p.getName());
+			prop.addAttribute("column", l.getName()+"-"+p.getName());
+			prop.addAttribute("type", p.getType());
 		}
 	}
 	

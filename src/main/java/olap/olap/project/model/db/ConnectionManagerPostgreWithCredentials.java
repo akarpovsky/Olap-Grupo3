@@ -66,7 +66,7 @@ public class ConnectionManagerPostgreWithCredentials implements
 
 	}
 
-	@Override
+	
 	public String getConnectionString() {
 		return this.connectionString;
 	}
