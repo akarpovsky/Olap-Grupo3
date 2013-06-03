@@ -43,6 +43,7 @@ public class MultidimCubeToMDXUtils {
 		
 		createFactTable(sb, multidim.getCube());
 		
+		System.out.println(sb.toString().toLowerCase());
 		return sb.toString().toLowerCase();
 		
 	}
@@ -61,22 +62,42 @@ public class MultidimCubeToMDXUtils {
 	
 	private static void createFactTablePrimaryKeys(StringBuilder sb, Cube cube) {
 		StringBuilder pks = new StringBuilder();
+		StringBuilder fks = new StringBuilder();
 		sb.append("\n\t/* Primary keys*/\n\n");
 		for(Entry<String,Dimension> entry : cube.getDimensions().entrySet()){
+			StringBuilder fksLevel = new StringBuilder();
+			StringBuilder fksLevelReferences = new StringBuilder();
 			Level l = entry.getValue().getLevel();
 			for(Property p : l.getProperties()){
 				if(p.isPK()){
 					pks.append( "\"" + entry.getKey() + "_" + p.getName() + "\"" +",");
+					fksLevel.append( entry.getKey() + "_" + p.getName() +",");
+					fksLevelReferences.append(l.getName() + "_" + p.getName()+",");
 				}
 				sb.append("\t\""+ entry.getKey() + "_" + p.getName() + "\" " + (p.getType().equals("string") ? "char[]":p.getType()) + " NOT NULL,\n");
 			}
+			
+			if(fksLevel.length() > 0){
+				fksLevel.deleteCharAt(fksLevel.length()-1);
+			}
+			
+			if(fksLevelReferences.length() > 0){
+				fksLevelReferences.deleteCharAt(fksLevelReferences.length()-1);
+			}
+			
+			fks.append("\tFOREIGN KEY (" + fksLevel +") REFERENCES " + entry.getKey() + "_" + l.getName() + "(" + fksLevelReferences +"),\n");
 				
 		}
 		
 		// Borro ultima coma
 		if(pks.length() > 0){
 			pks.deleteCharAt(pks.length()-1);
-			sb.append("\n\tPRIMARY KEY(" + pks + ")\n");
+			sb.append("\n\tPRIMARY KEY(" + pks + "),\n");
+		}
+		
+		if(fks.length() > 0){
+			fks.deleteCharAt(fks.length()-2);
+			sb.append(fks+"\n");
 		}
 		
 	}
@@ -87,7 +108,7 @@ public class MultidimCubeToMDXUtils {
 		sb.append("CREATE TABLE " + dimensionName + "_" + dimension.getName() + " (\n");
 		
 		// Creo los campos para el nivel inicial
-		createDimensionBasicFields(sb, dimension.getLevel());
+		String pks = createDimensionBasicFields(sb, dimension.getLevel());
 
 		
 		for(Hierarchy h: dimension.getHierarchies()){
@@ -95,17 +116,30 @@ public class MultidimCubeToMDXUtils {
 		}
 		
 		// Borro ultima coma
-		sb.deleteCharAt(sb.length()-2);
+//		sb.deleteCharAt(sb.length()-2);
 
+		sb.append(pks);
 		
 		sb.append("\n);\n");
-		System.out.println(sb.toString());
 	}
 
-	private static void createDimensionBasicFields(StringBuilder sb, Level l) {
+	private static String createDimensionBasicFields(StringBuilder sb, Level l) {
+		StringBuilder pks = new StringBuilder();
 		for(Property p : l.getProperties()){
 			sb.append("\t\""+ l.getName() + "_" + p.getName() + "\" " + (p.getType().equals("string") ? "char[]":p.getType()) + ",\n");
-		}		
+			if(p.isPK()){
+				pks.append( "\"" + l.getName() + "_" + p.getName() + "\"" +",");
+			}
+		}	
+		
+		String primaryKeysSentence = null;
+		// Borro ultima coma
+		if(pks.length() > 0){
+			pks.deleteCharAt(pks.length()-1);
+			primaryKeysSentence = new String("\n\tPRIMARY KEY(" + pks + ")\n");
+		}
+		
+		return primaryKeysSentence;
 	}
 
 	private static void createDimensionFields(StringBuilder sb, Hierarchy h) {
