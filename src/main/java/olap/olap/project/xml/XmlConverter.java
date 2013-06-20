@@ -146,12 +146,12 @@ public class XmlConverter {
 		level.addAttribute("hideMemberIf", "Never");
 		for(Property p : l.getProperties()) {
 			if(p.isPK()){
-				level.addAttribute("column", l.getName()+"-"+p.getName()+"-" +dimName );
+				level.addAttribute("column", l.getName()+"_"+p.getName()+"_" +dimName );
 				level.addAttribute("type",  Attribute.valueOf(p.getType().toUpperCase()).toString());
 			}
 			Element prop = level.addElement("Property");
-			prop.addAttribute("name", l.getName()+"-"+p.getName());
-			prop.addAttribute("column", l.getName()+"-"+p.getName()+"-" +dimName);
+			prop.addAttribute("name", l.getName()+"_"+p.getName());
+			prop.addAttribute("column", l.getName()+"_"+p.getName()+"_" +dimName);
 			prop.addAttribute("type", Attribute.valueOf(p.getType().toUpperCase()).toString());
 		}
 	}
