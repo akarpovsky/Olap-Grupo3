@@ -17,8 +17,9 @@
 
 <!-- CSS bootstrap styles -->
 <link href="<c:url value='/css/bootstrap.css'/>" rel="stylesheet">
-<!-- CSS PawBook styles -->
-<link href="<c:url value='/css/pawbook.css'/>" rel="stylesheet">
+<link href="<c:url value='/css/shCore.css'/>" rel="stylesheet">
+<link href="<c:url value='/css/shThemeDefault.css'/>" rel="stylesheet">
+
 
 <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
 <!--[if lt IE 9]>
@@ -34,7 +35,9 @@ body {
 
 <!-- Javascript -->
 <script type="text/javascript" src="<c:url value='/js/bootstrap.js'/>"></script>
+<script type="text/javascript" src="<c:url value='/js/shCore.js'/>"></script>
+<script type="text/javascript" src="<c:url value='/js/shBrushXml.js'/>"></script>
+
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
-<script type="text/javascript" src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js?lang=xml&skin=sunburst"></script>
 
 <!-- <script type="text/javascript" src="<c:url value='/js/graychartstheme.js'/>"></script> -->

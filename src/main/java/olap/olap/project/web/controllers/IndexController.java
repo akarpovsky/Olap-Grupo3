@@ -10,6 +10,8 @@ import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
 
 import olap.olap.project.model.MultiDim;
 import olap.olap.project.model.db.ConnectionManager;
@@ -21,7 +23,6 @@ import olap.olap.project.web.command.DBCredentialsForm;
 import olap.olap.project.web.command.UploadXmlForm;
 import olap.olap.project.xml.MultidimCubeToMDXUtils;
 import olap.olap.project.xml.XmlConverter;
-import olap.olap.project.xml.XmlFormatter;
 
 import org.apache.commons.io.IOUtils;
 import org.dom4j.DocumentException;
@@ -183,12 +184,18 @@ public class IndexController {
 			
 			FileInputStream inputStream2 = new FileInputStream("out/out.xml");
 			String everything = "";
+			String everythingPretty = "";
 		    try {
 		        everything = IOUtils.toString(inputStream2).toLowerCase();
 		    } finally {
 		        inputStream.close();
 		    }
-			mav2.addObject("MDXxml", new XmlFormatter().format(everything));
+		    try {
+		    	everythingPretty = parser.getTransformedHtml(everything);
+			} catch (TransformerException e) {
+				e.printStackTrace();
+			}
+			mav2.addObject("MDXxml", everythingPretty);
 			return mav2;
 		}
 	}

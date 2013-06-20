@@ -1,12 +1,24 @@
 package olap.olap.project.xml;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.Iterator;
 import java.util.Map.Entry;
+import java.util.Scanner;
+
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 import olap.olap.project.model.Attribute;
 import olap.olap.project.model.Cube;
@@ -60,7 +72,6 @@ public class XmlConverter {
 	public void generateXml(MultiDim multiDim, String fileName)
 			throws IOException {
 		Document out = DocumentHelper.createDocument();
-		out = out.addDocType("Schema", null, "mondrian.dtd");
 
 		Element schema = out.addElement("Schema");
 
@@ -277,22 +288,65 @@ public class XmlConverter {
 		dim.addHierarchy(hierachy);
 	}
 
+	public String getTransformedHtml(String xml) throws TransformerException {
+		byte[] xsl = getStringFromFile(new File("in/transform.xslt"))
+				.getBytes();
+
+		return getTransformedHtml(xml.getBytes(), xsl);
+	}
+
+	private String getTransformedHtml(byte[] xml, byte[] xsl)
+			throws TransformerException {
+		Source srcXml = new StreamSource(new ByteArrayInputStream(xml));
+		Source srcXsl = new StreamSource(new ByteArrayInputStream(xsl));
+		StringWriter writer = new StringWriter();
+		Result result = new StreamResult(writer);
+		TransformerFactory tFactory = TransformerFactory.newInstance();
+		Transformer transformer = tFactory.newTransformer(srcXsl);
+		transformer.transform(srcXml, result);
+		return writer.toString();
+	}
+
+	private static String getStringFromFile(File f) {
+		StringBuilder sb = new StringBuilder(1000);
+		try {
+			Scanner sc = new Scanner(f);
+			while (sc.hasNext()) {
+				sb.append(sc.nextLine());
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		return sb.toString();
+	}
+
 	public static void main(String[] args) throws DocumentException,
 			IOException {
 		XmlConverter xml = new XmlConverter();
+
+//		FileInputStream inputStream = new FileInputStream("in/in2.xml");
+//		try {
+//			String everything = IOUtils.toString(inputStream).toLowerCase();
+//			FileOutputStream outputStream = new FileOutputStream("in/temp.xml");
+//			IOUtils.write(everything, outputStream);
+//		} finally {
+//			inputStream.close();
+//		}
+
+//		MultiDim multiDim = xml.parse(new File("in/temp.xml"));
+//		xml.generateXml(multiDim, "out/output.xml");
 		
-		FileInputStream inputStream = new FileInputStream("in/in2.xml");
-	    try {
-	        String everything = IOUtils.toString(inputStream).toLowerCase();
-	        FileOutputStream outputStream = new FileOutputStream("in/temp.xml");
-	        IOUtils.write(everything, outputStream);
-	    } finally {
-	        inputStream.close();
-	    }
-		
-		MultiDim multiDim = xml.parse(new File("in/temp.xml"));
-		xml.generateXml(multiDim, "out/output.xml");
-		    
-		    
+		FileInputStream inputStream = new FileInputStream("out/out.xml");
+		try {
+			String everything = IOUtils.toString(inputStream).toLowerCase();
+			try {
+				System.out.println(xml.getTransformedHtml(everything));
+			} catch (TransformerException e) {
+				e.printStackTrace();
+			}
+		} finally {
+			inputStream.close();
+		}
+
 	}
 }
