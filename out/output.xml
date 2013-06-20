@@ -7,18 +7,18 @@
 			<Hierarchy name="calendar" hasAll="true" allMemberName="Allcalendar"
 				primaryKey="dia_inicio_temporal">
 				<Table name="inicio_temporal" />
-				<Level name="Month" uniqueMembers="false" levelType="Regular"
-					hideMemberIf="Never" column="Month_Mes_inicio_temporal" type="Numeric">
-					<Property name="Month_Mes" column="Month_Mes_inicio_temporal"
-						type="Numeric" />
-					<Property name="Month_Nombre" column="Month_Nombre_inicio_temporal"
-						type="String" />
-				</Level>
 				<Level name="Year" uniqueMembers="false" levelType="Regular"
 					hideMemberIf="Never" column="Year_anio_inicio_temporal" type="Numeric">
+					<Property name="Year_esBisiesto" column="Year_esBisiesto_inicio_temporal"
+						type="Numeric" />
 					<Property name="Year_anio" column="Year_anio_inicio_temporal"
 						type="Numeric" />
-					<Property name="Year_esBisiesto" column="Year_esBisiesto_inicio_temporal"
+				</Level>
+				<Level name="Month" uniqueMembers="false" levelType="Regular"
+					hideMemberIf="Never" column="Month_Mes_inicio_temporal" type="Numeric">
+					<Property name="Month_Nombre" column="Month_Nombre_inicio_temporal"
+						type="String" />
+					<Property name="Month_Mes" column="Month_Mes_inicio_temporal"
 						type="Numeric" />
 				</Level>
 			</Hierarchy>
@@ -39,63 +39,63 @@
 			<Hierarchy name="calendar" hasAll="true" allMemberName="Allcalendar"
 				primaryKey="dia_fin_temporal">
 				<Table name="fin_temporal" />
-				<Level name="Month" uniqueMembers="false" levelType="Regular"
-					hideMemberIf="Never" column="Month_Mes_fin_temporal" type="Numeric">
-					<Property name="Month_Mes" column="Month_Mes_fin_temporal"
-						type="Numeric" />
-					<Property name="Month_Nombre" column="Month_Nombre_fin_temporal"
-						type="String" />
-				</Level>
 				<Level name="Year" uniqueMembers="false" levelType="Regular"
 					hideMemberIf="Never" column="Year_anio_fin_temporal" type="Numeric">
+					<Property name="Year_esBisiesto" column="Year_esBisiesto_fin_temporal"
+						type="Numeric" />
 					<Property name="Year_anio" column="Year_anio_fin_temporal"
 						type="Numeric" />
-					<Property name="Year_esBisiesto" column="Year_esBisiesto_fin_temporal"
+				</Level>
+				<Level name="Month" uniqueMembers="false" levelType="Regular"
+					hideMemberIf="Never" column="Month_Mes_fin_temporal" type="Numeric">
+					<Property name="Month_Nombre" column="Month_Nombre_fin_temporal"
+						type="String" />
+					<Property name="Month_Mes" column="Month_Mes_fin_temporal"
 						type="Numeric" />
 				</Level>
 			</Hierarchy>
 		</Dimension>
 		<Dimension name="fabrica_Fabrica" foreignKey="Lat_fabrica_Fabrica">
-			<Hierarchy name="Geo location" hasAll="true" allMemberName="AllGeo location"
-				primaryKey="Lat_fabrica_Fabrica">
-				<Table name="fabrica_Fabrica" />
-				<Level name="Ciudad" uniqueMembers="false" levelType="Regular"
-					hideMemberIf="Never" column="Ciudad_nombre_fabrica_Fabrica" type="String">
-					<Property name="Ciudad_poblacion" column="Ciudad_poblacion_fabrica_Fabrica"
-						type="Numeric" />
-					<Property name="Ciudad_nombre" column="Ciudad_nombre_fabrica_Fabrica"
-						type="String" />
-				</Level>
-				<Level name="Pais" uniqueMembers="false" levelType="Regular"
-					hideMemberIf="Never" column="Pais_nombre_fabrica_Fabrica" type="String">
-					<Property name="Pais_the_geom" column="Pais_the_geom_fabrica_Fabrica"
-						type="Integer" />
-					<Property name="Pais_nombre" column="Pais_nombre_fabrica_Fabrica"
-						type="String" />
-				</Level>
-			</Hierarchy>
 			<Hierarchy name="Categoria" hasAll="true" allMemberName="AllCategoria"
 				primaryKey="Lat_fabrica_Fabrica">
 				<Table name="fabrica_Fabrica" />
-				<Level name="Empresa" uniqueMembers="false" levelType="Regular"
-					hideMemberIf="Never" column="Empresa_Nombre_fabrica_Fabrica" type="String">
-					<Property name="Empresa_Nombre" column="Empresa_Nombre_fabrica_Fabrica"
-						type="String" />
-					<Property name="Empresa_FactAnual" column="Empresa_FactAnual_fabrica_Fabrica"
-						type="Numeric" />
-				</Level>
 				<Level name="Rubro" uniqueMembers="false" levelType="Regular"
 					hideMemberIf="Never" column="Rubro_tipoID_fabrica_Fabrica" type="Numeric">
+					<Property name="Rubro_tipoID" column="Rubro_tipoID_fabrica_Fabrica"
+						type="Numeric" />
 					<Property name="Rubro_tipoDesc" column="Rubro_tipoDesc_fabrica_Fabrica"
 						type="String" />
-					<Property name="Rubro_tipoID" column="Rubro_tipoID_fabrica_Fabrica"
+				</Level>
+				<Level name="Empresa" uniqueMembers="false" levelType="Regular"
+					hideMemberIf="Never" column="Empresa_Nombre_fabrica_Fabrica" type="String">
+					<Property name="Empresa_FactAnual" column="Empresa_FactAnual_fabrica_Fabrica"
+						type="Numeric" />
+					<Property name="Empresa_Nombre" column="Empresa_Nombre_fabrica_Fabrica"
+						type="String" />
+				</Level>
+			</Hierarchy>
+			<Hierarchy name="Geo location" hasAll="true" allMemberName="AllGeo location"
+				primaryKey="Lat_fabrica_Fabrica">
+				<Table name="fabrica_Fabrica" />
+				<Level name="Pais" uniqueMembers="false" levelType="Regular"
+					hideMemberIf="Never" column="Pais_nombre_fabrica_Fabrica" type="String">
+					<Property name="Pais_nombre" column="Pais_nombre_fabrica_Fabrica"
+						type="String" />
+					<Property name="Pais_the_geom" column="Pais_the_geom_fabrica_Fabrica"
+						type="Integer" />
+				</Level>
+				<Level name="Ciudad" uniqueMembers="false" levelType="Regular"
+					hideMemberIf="Never" column="Ciudad_nombre_fabrica_Fabrica" type="String">
+					<Property name="Ciudad_nombre" column="Ciudad_nombre_fabrica_Fabrica"
+						type="String" />
+					<Property name="Ciudad_poblacion" column="Ciudad_poblacion_fabrica_Fabrica"
 						type="Numeric" />
 				</Level>
 			</Hierarchy>
 		</Dimension>
-		<Measure aggregator="sum" name="nube" column="nube" datatype="Integer" />
 		<Measure aggregator="sum" name="emision" column="emision"
 			datatype="Numeric" />
+		<Measure aggregator="sum" name="nube" column="nube" datatype="Integer" />
 		<Measure aggregator="avg" name="emisionmala" column="emisionmala"
 			datatype="Numeric" />
 	</Cube>
