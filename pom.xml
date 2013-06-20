@@ -5,7 +5,7 @@
 	<groupId>olap</groupId>
 	<artifactId>olap.project</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>jar</packaging>
+	<packaging>war</packaging>
 
 	<name>olap.project</name>
 	<url>http://maven.apache.org</url>
@@ -102,9 +102,12 @@
 			<artifactId>postgresql</artifactId>
 			<version>9.0-801.jdbc4</version>
 		</dependency>
-
+		     <dependency>
+        <groupId>com.google.gwt.google-apis</groupId>
+        <artifactId>gwt-gears</artifactId>
+        <version>1.1.1</version>
+      </dependency>
+    
 	</dependencies>
-
-
 
 </project>

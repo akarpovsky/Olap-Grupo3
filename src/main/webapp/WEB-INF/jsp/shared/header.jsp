@@ -21,9 +21,11 @@
 	<script type="text/javascript" src="<%=request.getContextPath()%>/assets/js/bootstrap-button.js"></script>
 	<script type="text/javascript" src="<%=request.getContextPath()%>/assets/js/buttons.js"></script>
 	
+	
 	<script type="text/javascript">
 		basePath = "<%=request.getContextPath()%>";
 	</script>
+	
 	<script type="text/javascript" src="<%=request.getContextPath()%>/assets/js/application.js"></script>
 </head>
 <body>

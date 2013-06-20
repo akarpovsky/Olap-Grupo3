@@ -1,9 +1,13 @@
 package olap.olap.project.xml;
 
+import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Map.Entry;
+
+import org.dom4j.DocumentException;
 
 import olap.olap.project.model.Cube;
 import olap.olap.project.model.Dimension;
@@ -70,11 +74,11 @@ public class MultidimCubeToMDXUtils {
 			Level l = entry.getValue().getLevel();
 			for(Property p : l.getProperties()){
 				if(p.isPK()){
-					pks.append( "\"" + entry.getKey() + "_" + p.getName() + "\"" +",");
-					fksLevel.append( entry.getKey() + "_" + p.getName() +",");
-					fksLevelReferences.append(l.getName() + "_" + p.getName()+",");
+					pks.append( "\"" + p.getName() + "_" + entry.getKey() + "_" + l.getName() + "\"" +",");
+					fksLevel.append( p.getName() + "_" + entry.getKey() + "_" + l.getName() +",");
+					fksLevelReferences.append(p.getName() + "_" + entry.getKey() + "_" + l.getName() + ",");
 				}
-				sb.append("\t\""+ entry.getKey() + "_" + p.getName() + "\" " + (p.getType().equals("string") ? "char[]":p.getType()) + " NOT NULL,\n");
+				sb.append("\t\""+ p.getName() + "_" + entry.getKey() + "_" + l.getName()  + "\" " + (p.getType().equals("string") ? "char[]":p.getType()) + " NOT NULL,\n");
 			}
 			
 			if(fksLevel.length() > 0){
@@ -108,11 +112,11 @@ public class MultidimCubeToMDXUtils {
 		sb.append("CREATE TABLE " + dimensionName + "_" + dimension.getName() + " (\n");
 		
 		// Creo los campos para el nivel inicial
-		String pks = createDimensionBasicFields(sb, dimension.getLevel());
+		String pks = createDimensionBasicFields(sb, dimension.getLevel(), dimensionName + "_" + dimension.getName());
 
 		
 		for(Hierarchy h: dimension.getHierarchies()){
-			createDimensionFields(sb, h);
+			createDimensionFields(sb, h, dimensionName + "_" + dimension.getName());
 		}
 		
 		// Borro ultima coma
@@ -123,12 +127,15 @@ public class MultidimCubeToMDXUtils {
 		sb.append("\n);\n");
 	}
 
-	private static String createDimensionBasicFields(StringBuilder sb, Level l) {
+	private static String createDimensionBasicFields(StringBuilder sb, Level l, String dimensionFullName) {
 		StringBuilder pks = new StringBuilder();
 		for(Property p : l.getProperties()){
-			sb.append("\t\""+ l.getName() + "_" + p.getName() + "\" " + (p.getType().equals("string") ? "char[]":p.getType()) + ",\n");
+			System.out.println("Dimension fullname "  + dimensionFullName);
 			if(p.isPK()){
-				pks.append( "\"" + l.getName() + "_" + p.getName() + "\"" +",");
+				sb.append("\t\""+ p.getName() + "_"  + dimensionFullName + "\" " + (p.getType().equals("string") ? "char[]":p.getType()) + ",\n");
+				pks.append( "\"" + p.getName() + "_"  + dimensionFullName  + "\"" +",");
+			}else{
+				sb.append("\t\""+  p.getName() + "_" + dimensionFullName  + "\" " + (p.getType().equals("string") ? "char[]":p.getType()) + ",\n");
 			}
 		}	
 		
@@ -142,13 +149,19 @@ public class MultidimCubeToMDXUtils {
 		return primaryKeysSentence;
 	}
 
-	private static void createDimensionFields(StringBuilder sb, Hierarchy h) {
+	private static void createDimensionFields(StringBuilder sb, Hierarchy h, String dimensionFullName) {
 		for(Level l: h.getLevels()){
 			for(Property p : l.getProperties()){
-				sb.append("\t\""+ l.getName() + "_" + p.getName() + "\" " + (p.getType().equals("string") ? "char[]":p.getType()) + ",\n");
+				sb.append("\t\""+ l.getName() + "_" + p.getName() + "_" + dimensionFullName + "\" " + (p.getType().equals("string") ? "char[]":p.getType()) + ",\n");
 			}
 		}
 	}
 	
+	public static void main(String[] args) throws DocumentException,
+	IOException {
+		XmlConverter xml = new XmlConverter();
+		MultiDim multiDim = xml.parse(new File("in/in2.xml"));
+		MultidimCubeToMDXUtils.convertToMDX(multiDim);
+}
 
 }

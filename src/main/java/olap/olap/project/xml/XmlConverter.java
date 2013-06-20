@@ -1,6 +1,8 @@
 package olap.olap.project.xml;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Iterator;
@@ -15,6 +17,7 @@ import olap.olap.project.model.Measure;
 import olap.olap.project.model.MultiDim;
 import olap.olap.project.model.Property;
 
+import org.apache.commons.io.IOUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
@@ -250,8 +253,8 @@ public class XmlConverter {
 		while (i.hasNext()) {
 			Element prop = i.next();
 			boolean id;
-			if (prop.attribute("ID") != null) {
-				id = prop.attributeValue("ID").equals("true");
+			if (prop.attribute("id") != null) {
+				id = prop.attributeValue("id").equals("true");
 			} else {
 				id = false;
 			}
@@ -277,7 +280,19 @@ public class XmlConverter {
 	public static void main(String[] args) throws DocumentException,
 			IOException {
 		XmlConverter xml = new XmlConverter();
-		MultiDim multiDim = xml.parse(new File("in/in2.xml"));
+		
+		FileInputStream inputStream = new FileInputStream("in/in2.xml");
+	    try {
+	        String everything = IOUtils.toString(inputStream).toLowerCase();
+	        FileOutputStream outputStream = new FileOutputStream("in/temp.xml");
+	        IOUtils.write(everything, outputStream);
+	    } finally {
+	        inputStream.close();
+	    }
+		
+		MultiDim multiDim = xml.parse(new File("in/temp.xml"));
 		xml.generateXml(multiDim, "out/output.xml");
+		    
+		    
 	}
 }

@@ -1,9 +1,12 @@
 package olap.olap.project.web.controllers;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -11,11 +14,16 @@ import javax.servlet.http.HttpServletRequest;
 import olap.olap.project.model.MultiDim;
 import olap.olap.project.model.db.ConnectionManager;
 import olap.olap.project.model.db.ConnectionManagerPostgreWithCredentials;
+import olap.olap.project.model.db.DBColumn;
+import olap.olap.project.model.db.DBTable;
+import olap.olap.project.model.db.DBUtils;
 import olap.olap.project.web.command.DBCredentialsForm;
 import olap.olap.project.web.command.UploadXmlForm;
 import olap.olap.project.xml.MultidimCubeToMDXUtils;
 import olap.olap.project.xml.XmlConverter;
+import olap.olap.project.xml.XmlFormatter;
 
+import org.apache.commons.io.IOUtils;
 import org.dom4j.DocumentException;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.Errors;
@@ -129,7 +137,18 @@ public class IndexController {
 			File tmpFile = new File(System.getProperty("java.io.tmpdir")
 					+ System.getProperty("file.separator")
 					+ xmlfile.getOriginalFilename());
+			
 			xmlfile.transferTo(tmpFile);
+			
+			FileInputStream inputStream = new FileInputStream(tmpFile);
+		    try {
+		        String everything = IOUtils.toString(inputStream).toLowerCase();
+		        FileOutputStream outputStream = new FileOutputStream(tmpFile);
+		        IOUtils.write(everything, outputStream);
+		    } finally {
+		        inputStream.close();
+		    }
+			
 			XmlConverter parser = new XmlConverter();
 			
 			final ConnectionManager connectionManager = ConnectionManagerPostgreWithCredentials.getConnectionManagerWithCredentials();
@@ -158,7 +177,18 @@ public class IndexController {
 			mav2.addObject("dburl", connectionManager.getConnectionString());
 			mav2.addObject("MDXtables", MDXtables.replace("\n", "<br />")
 													.replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"));
-
+			
+			//Generate MDX xml
+			parser.generateXml(xmlDocument, "out/out.xml");
+			
+			FileInputStream inputStream2 = new FileInputStream("out/out.xml");
+			String everything = "";
+		    try {
+		        everything = IOUtils.toString(inputStream2).toLowerCase();
+		    } finally {
+		        inputStream.close();
+		    }
+			mav2.addObject("MDXxml", new XmlFormatter().format(everything));
 			return mav2;
 		}
 	}
@@ -182,6 +212,66 @@ public class IndexController {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return mav;
+	}
+	
+	@RequestMapping(method = RequestMethod.GET)
+	protected ModelAndView select_db_table(HttpServletRequest req, String choiceTable) throws ServletException, IOException {
+		final ModelAndView mav = new ModelAndView();
+		final ConnectionManager connectionManager = ConnectionManagerPostgreWithCredentials.getConnectionManagerWithCredentials();
+		
+		if(connectionManager == null){
+			ModelAndView errorMav = new ModelAndView("error/error");
+			errorMav.addObject("errorDescription", "Acceso no autorizado.");
+			errorMav.addObject("errorMessage", "No deberia entrar a este sitio sin antes tener abierta la conexion con la base de datos.");
+			errorMav.addObject("errorCode", "403");
+			return errorMav;
+		}
+		
+		try {
+			final Connection conn = connectionManager.getConnectionWithCredentials();
+			mav.addObject("currentTable", choiceTable);
+			mav.addObject("dburl", connectionManager.getConnectionString());
+			mav.addObject("dbtables", DBUtils.getTablesInDB(conn));
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return mav;
+	}
+	
+	@RequestMapping(method = RequestMethod.GET)
+	protected ModelAndView select_db_column(HttpServletRequest req, String currentTable, String choiceColumn) throws ServletException, IOException {
+		final ModelAndView mav = new ModelAndView();
+		final ConnectionManager connectionManager = ConnectionManagerPostgreWithCredentials.getConnectionManagerWithCredentials();
+		ModelAndView errorMav = new ModelAndView("error/error");
+		
+		if(connectionManager == null){
+			errorMav.addObject("errorDescription", "Acceso no autorizado.");
+			errorMav.addObject("errorMessage", "No deberia entrar a este sitio sin antes tener abierta la conexion con la base de datos.");
+			errorMav.addObject("errorCode", "403");
+			return errorMav;
+		}
+		
+		try {
+			final Connection conn = connectionManager.getConnectionWithCredentials();
+			mav.addObject("currentColumn", choiceColumn);
+			mav.addObject("dburl", connectionManager.getConnectionString());
+			DBTable table = DBUtils.getTableInDB(conn, currentTable);
+			if(table == null){
+				errorMav.addObject("errorDescription", "Tabla inválida.");
+				errorMav.addObject("errorMessage", "No se encontró la tabla que está buscando.");
+				errorMav.addObject("errorCode", "404");
+				return errorMav;
+			}
+			List<DBColumn> columns = table.getColumns();
+			mav.addObject("dbcolumns", columns);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 		return mav;
 	}
 

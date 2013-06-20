@@ -29,6 +29,10 @@
 		<h1>Tablas MDX</h1>
 		<span class="">Conectado a <span class="badge badge-warning">${dburl}</span></span><br />
 		${MDXtables}
+		<h1>XML MDX</h1>
+		<xmp>
+			${MDXxml}
+		</xmp>
 	</div>
 	<%@ include file="/WEB-INF/jsp/footer.jsp"%>
 </body>

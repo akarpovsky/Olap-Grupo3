@@ -23,7 +23,6 @@
 }
 </style>
 <body>
-
 	<%@ include file="/WEB-INF/jsp/header.jsp"%>
 	<div class="container well">
 		<h1>Conexi&oacute;n con la base de datos</h1>
