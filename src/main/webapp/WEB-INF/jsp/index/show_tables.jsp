@@ -23,17 +23,20 @@
 }
 </style>
 <body>
-
 	<%@ include file="/WEB-INF/jsp/header.jsp"%>
 	<div class="container well">
 		<h1>Tablas MDX</h1>
 		<span class="">Conectado a <span class="badge badge-warning">${dburl}</span></span><br />
 		${MDXtables}
 		<h1>XML MDX</h1>
-		<xmp>
-			${MDXxml}
-		</xmp>
+		<script type="syntaxhighlighter" class="brush: js"><![CDATA[
+			<c:out value="${MDXxml}"/>
+		]]></script>
 	</div>
-	<%@ include file="/WEB-INF/jsp/footer.jsp"%>
 </body>
+	<%@ include file="/WEB-INF/jsp/footer.jsp"%>
+	<!-- Finally, to actually run the highlighter, you need to include this JS on your page -->
+	<script type="text/javascript">
+	     SyntaxHighlighter.all()
+	</script>
 </html>
