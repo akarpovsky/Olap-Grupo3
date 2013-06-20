@@ -65,18 +65,18 @@ public class XmlConverter {
 		cubeElem.addAttribute("cache", "true");
 		cubeElem.addAttribute("enabled", "true");
 		Element factTable = cubeElem.addElement("Table");
-		factTable.addAttribute("name", cube.getName() + "Fact");
+		factTable.addAttribute("name", cube.getName() + "_"+"fact");
 		
 		for (Entry<String, Dimension> entry : multiDim.getCube().getDimensions().entrySet()) {
 			String pk = "";
 			String pkType = "";
-			String dimName = entry.getKey() + entry.getValue().getName();
+			String dimName = entry.getKey() +"_"+ entry.getValue().getName();
 			Element dim = cubeElem.addElement("Dimension");
 			Dimension dimension = entry.getValue();
 			dim.addAttribute("name", dimName);
 			for(Property p: dimension.getLevel().getProperties()){
 				if(p.isPK()){
-					pk = p.getName()+dimName;
+					pk = p.getName()+"_"+dimName;
 					dim.addAttribute("foreignKey",pk );
 					pkType =  Attribute.valueOf(p.getType().toUpperCase()).toString();
 					break; //Lo hace sólo para el primero, si es compuesta se debe cambiar.
