@@ -27,9 +27,16 @@
 	<div class="container well">
 		<h1>Tablas MDX</h1>
 		<span class="">Conectado a <span class="badge badge-warning">${dburl}</span></span><br />
-		${MDXtables}
+		<c:if test="${dbError}">
+			<h3>Error ${errorCode}</h3>
+			<span class="">${errorDescription}</span><br />
+			<span class="">Descripci&oacute;n: </span><span class="badge badge-info">${errorMessage}</span>
+		</c:if>
+		<c:if test="${!dbError}">
+			${MDXtables}
+		</c:if>
 		<h1>XML MDX</h1>
-		<script type="syntaxhighlighter" class="brush: js"><![CDATA[
+		<script type="syntaxhighlighter" class="brush: xml; toolbar: false;"><![CDATA[
 			<c:out value="${MDXxml}"/>
 		]]></script>
 	</div>

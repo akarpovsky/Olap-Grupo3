@@ -6,11 +6,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 
 import olap.olap.project.model.MultiDim;
@@ -41,13 +42,14 @@ public class IndexController {
 	}
 
 	@RequestMapping(method = RequestMethod.GET)
-	protected ModelAndView index(final DBCredentialsForm form, HttpServletRequest req)
-			throws ServletException, IOException {
+	protected ModelAndView index(final DBCredentialsForm form,
+			HttpServletRequest req) throws ServletException, IOException {
 		final ModelAndView mav = new ModelAndView("index/index");
-		
-		final ConnectionManager connectionManager = ConnectionManagerPostgreWithCredentials.getConnectionManagerWithCredentials();
-		
-		if(connectionManager != null){
+
+		final ConnectionManager connectionManager = ConnectionManagerPostgreWithCredentials
+				.getConnectionManagerWithCredentials();
+
+		if (connectionManager != null) {
 			try {
 				connectionManager.getConnectionWithCredentials();
 			} catch (SQLException e) {
@@ -59,38 +61,40 @@ public class IndexController {
 			mav.addObject("uploadxmlform", new UploadXmlForm());
 			return mav;
 		}
-		
+
 		mav.addObject("dbcredentialsform", form);
 		return mav;
 	}
-	
+
 	@RequestMapping(method = RequestMethod.GET)
-	protected ModelAndView uploadxml(final UploadXmlForm form, HttpServletRequest req)
-			throws ServletException, IOException {
-		
+	protected ModelAndView uploadxml(final UploadXmlForm form,
+			HttpServletRequest req) throws ServletException, IOException {
+
 		ModelAndView mav = new ModelAndView();
-		final ConnectionManager connectionManager = ConnectionManagerPostgreWithCredentials.getConnectionManagerWithCredentials();
-		
-		if(connectionManager == null){
-			mav.setViewName("redirect:" + req.getServletPath()
-					+ "/index/index");
+		final ConnectionManager connectionManager = ConnectionManagerPostgreWithCredentials
+				.getConnectionManagerWithCredentials();
+
+		if (connectionManager == null) {
+			mav.setViewName("redirect:" + req.getServletPath() + "/index/index");
 			return mav;
 		}
-		
+
 		try {
-			final Connection conn = connectionManager.getConnectionWithCredentials();
+			final Connection conn = connectionManager
+					.getConnectionWithCredentials();
 			mav.addObject("dburl", connectionManager.getConnectionString());
 		} catch (Exception e) {
 			ModelAndView errorMav = new ModelAndView("error/error");
-			errorMav.addObject("errorDescription", "No se ha podido establecer la conexión con la base de datos");
+			errorMav.addObject("errorDescription",
+					"No se ha podido establecer la conexión con la base de datos");
 			errorMav.addObject("errorMessage", e.getMessage());
 			return errorMav;
 		}
-		
+
 		mav.addObject("uploadxmlform", form);
 		return mav;
 	}
-	
+
 	@RequestMapping(method = RequestMethod.POST)
 	public ModelAndView connectToDB(final HttpServletRequest req,
 			final DBCredentialsForm form, Errors errors) {
@@ -103,25 +107,26 @@ public class IndexController {
 		} else if (form.getUser_db() == null) {
 			errors.rejectValue("empty", "user_db");
 			return mav;
-			
+
 		} else if (form.getPassword_db() == null) {
 			errors.rejectValue("empty", "password_db");
 			return mav;
 		} else {
 			try {
-				final ConnectionManager connectionManager = ConnectionManagerPostgreWithCredentials.setConnectionManagerWithCredentials(form.getUrl_db(), form.getUser_db(), form.getPassword_db());
+				final ConnectionManager connectionManager = ConnectionManagerPostgreWithCredentials
+						.setConnectionManagerWithCredentials(form.getUrl_db(),
+								form.getUser_db(), form.getPassword_db());
 				connectionManager.getConnectionWithCredentials();
 			} catch (Exception e) {
 				mav.addObject("couldNotConnectToDB", true);
 				return mav;
 			}
 		}
-		
-		mav.setViewName("redirect:" + req.getServletPath()
-				+ "/index/uploadxml");
+
+		mav.setViewName("redirect:" + req.getServletPath() + "/index/uploadxml");
 		return mav;
 	}
-	
+
 	@RequestMapping(method = RequestMethod.POST)
 	public ModelAndView uploadxml(final HttpServletRequest req,
 			final UploadXmlForm form, Errors errors) throws DocumentException,
@@ -134,151 +139,196 @@ public class IndexController {
 			errors.rejectValue("empty", "file");
 			return mav;
 		} else {
-			MultipartFile xmlfile = form.getFile();
-			File tmpFile = new File(System.getProperty("java.io.tmpdir")
-					+ System.getProperty("file.separator")
-					+ xmlfile.getOriginalFilename());
-			
-			xmlfile.transferTo(tmpFile);
-			
-			FileInputStream inputStream = new FileInputStream(tmpFile);
-		    try {
-		        String everything = IOUtils.toString(inputStream).toLowerCase();
-		        FileOutputStream outputStream = new FileOutputStream(tmpFile);
-		        IOUtils.write(everything, outputStream);
-		    } finally {
-		        inputStream.close();
-		    }
 			
 			XmlConverter parser = new XmlConverter();
-			
-			final ConnectionManager connectionManager = ConnectionManagerPostgreWithCredentials.getConnectionManagerWithCredentials();
+
+			final ConnectionManager connectionManager = ConnectionManagerPostgreWithCredentials
+					.getConnectionManagerWithCredentials();
 			Connection conn;
 			try {
 				conn = connectionManager.getConnectionWithCredentials();
 			} catch (Exception e) {
-				errorMav.addObject("errorDescription", "No se ha podido establecer la conexión con la base de datos");
+				errorMav.addObject("errorDescription",
+						"No se ha podido establecer la conexión con la base de datos");
 				errorMav.addObject("errorMessage", e.getMessage());
 				return errorMav;
 			}
 
+			ModelAndView mav2;
 			
-			MultiDim xmlDocument = parser.parse(tmpFile);
-			xmlDocument.print();
-			String MDXtables = null;
-			try {
-				MDXtables = MultidimCubeToMDXUtils.convertToMDXAndCreateSchema(xmlDocument, conn);
-			} catch (SQLException e) {
-				errorMav.addObject("errorDescription", "No se ha podido crear el esquema en la base de datos provista.");
-				errorMav.addObject("errorMessage", e.getMessage());
-				errorMav.addObject("errorCode", e.getErrorCode());
-				return errorMav;
+
+			if (!form.getManualDataSelection()) { // Automatic execution
+
+				MultipartFile xmlfile = form.getFile();
+				File tmpFile = new File(System.getProperty("java.io.tmpdir")
+						+ System.getProperty("file.separator")
+						+ xmlfile.getOriginalFilename());
+
+				xmlfile.transferTo(tmpFile);
+
+				FileInputStream inputStream = new FileInputStream(tmpFile);
+				try {
+					String everything = IOUtils.toString(inputStream)
+							.toLowerCase();
+					FileOutputStream outputStream = new FileOutputStream(
+							tmpFile);
+					IOUtils.write(everything, outputStream);
+				} finally {
+					inputStream.close();
+				}
+				
+				mav2 = new ModelAndView("/index/show_tables");
+				
+				MultiDim xmlDocument = parser.parse(tmpFile);
+				boolean dbError = false;
+				xmlDocument.print();
+				String MDXtables = null;
+				try {
+					MDXtables = MultidimCubeToMDXUtils
+							.convertToMDXAndCreateSchema(xmlDocument, conn);
+				} catch (SQLException e) {
+					dbError = true;
+					mav2.addObject("errorDescription",
+							"No se ha podido crear el esquema en la base de datos provista.");
+					mav2.addObject("errorMessage", e.getMessage());
+					mav2.addObject("errorCode", e.getErrorCode());
+				}
+
+				mav2.addObject("dbError", dbError);
+
+				if (!dbError) {
+					mav2.addObject(
+							"MDXtables",
+							MDXtables.replace("\n", "<br />").replace("\t",
+									"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"));
+				}
+				// Generate MDX xml
+				parser.generateXml(xmlDocument, "out/out.xml");
+
+				FileInputStream inputStream2 = new FileInputStream(
+						"out/out.xml");
+				String everything = "";
+				String everythingPretty = "";
+				try {
+					everything = IOUtils.toString(inputStream2).toLowerCase();
+				} finally {
+					inputStream.close();
+				}
+				try {
+					everythingPretty = parser.getTransformedHtml(everything);
+				} catch (TransformerException e) {
+					e.printStackTrace();
+				}
+				mav2.addObject("MDXxml", everythingPretty);
+				
+			} else { // Manual execution
+				mav2 = new ModelAndView("/index/select_db_table");
+				mav2.addObject("dburl", connectionManager.getConnectionString());
+
 			}
-			ModelAndView mav2 = new ModelAndView("/index/show_tables");
-			mav2.addObject("dburl", connectionManager.getConnectionString());
-			mav2.addObject("MDXtables", MDXtables.replace("\n", "<br />")
-													.replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"));
-			
-			//Generate MDX xml
-			parser.generateXml(xmlDocument, "out/out.xml");
-			
-			FileInputStream inputStream2 = new FileInputStream("out/out.xml");
-			String everything = "";
-			String everythingPretty = "";
-		    try {
-		        everything = IOUtils.toString(inputStream2).toLowerCase();
-		    } finally {
-		        inputStream.close();
-		    }
-		    try {
-		    	everythingPretty = parser.getTransformedHtml(everything);
-			} catch (TransformerException e) {
-				e.printStackTrace();
-			}
-			mav2.addObject("MDXxml", everythingPretty);
+
 			return mav2;
 		}
 	}
 
 	@RequestMapping(method = RequestMethod.GET)
-	protected ModelAndView show_tables(HttpServletRequest req) throws ServletException, IOException {
+	protected ModelAndView show_tables(HttpServletRequest req)
+			throws ServletException, IOException {
 		final ModelAndView mav = new ModelAndView();
-		final ConnectionManager connectionManager = ConnectionManagerPostgreWithCredentials.getConnectionManagerWithCredentials();
-		
-		if(connectionManager == null){
+		final ConnectionManager connectionManager = ConnectionManagerPostgreWithCredentials
+				.getConnectionManagerWithCredentials();
+
+		if (connectionManager == null) {
 			ModelAndView errorMav = new ModelAndView("error/error");
 			errorMav.addObject("errorDescription", "Acceso no autorizado.");
-			errorMav.addObject("errorMessage", "No deberia entrar a este sitio sin antes tener abierta la conexion con la base de datos.");
+			errorMav.addObject(
+					"errorMessage",
+					"No deberia entrar a este sitio sin antes tener abierta la conexion con la base de datos.");
 			errorMav.addObject("errorCode", "403");
 			return errorMav;
 		}
-		
+
 		try {
-			final Connection conn = connectionManager.getConnectionWithCredentials();
+			final Connection conn = connectionManager
+					.getConnectionWithCredentials();
 			mav.addObject("dburl", connectionManager.getConnectionString());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return mav;
 	}
-	
+
 	@RequestMapping(method = RequestMethod.GET)
-	protected ModelAndView select_db_table(HttpServletRequest req, String choiceTable) throws ServletException, IOException {
+	protected ModelAndView select_db_table(HttpServletRequest req,
+			String choiceTable) throws ServletException, IOException {
 		final ModelAndView mav = new ModelAndView();
-		final ConnectionManager connectionManager = ConnectionManagerPostgreWithCredentials.getConnectionManagerWithCredentials();
-		
-		if(connectionManager == null){
+		final ConnectionManager connectionManager = ConnectionManagerPostgreWithCredentials
+				.getConnectionManagerWithCredentials();
+
+		if (connectionManager == null) {
 			ModelAndView errorMav = new ModelAndView("error/error");
 			errorMav.addObject("errorDescription", "Acceso no autorizado.");
-			errorMav.addObject("errorMessage", "No deberia entrar a este sitio sin antes tener abierta la conexion con la base de datos.");
+			errorMav.addObject(
+					"errorMessage",
+					"No deberia entrar a este sitio sin antes tener abierta la conexion con la base de datos.");
 			errorMav.addObject("errorCode", "403");
 			return errorMav;
 		}
-		
+
 		try {
-			final Connection conn = connectionManager.getConnectionWithCredentials();
+			final Connection conn = connectionManager
+					.getConnectionWithCredentials();
+//			Map<String, List<DBTable>> tableSelectionMap = new HashMap<String, List<DBTable>>();
+//			mav.addObject("tableSelectionMap", tableSelectionMap);
 			mav.addObject("currentTable", choiceTable);
 			mav.addObject("dburl", connectionManager.getConnectionString());
 			mav.addObject("dbtables", DBUtils.getTablesInDB(conn));
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		return mav;
 	}
-	
+
 	@RequestMapping(method = RequestMethod.GET)
-	protected ModelAndView select_db_column(HttpServletRequest req, String currentTable, String choiceColumn) throws ServletException, IOException {
+	protected ModelAndView select_db_column(HttpServletRequest req,
+			String currentTable, String choiceColumn) throws ServletException,
+			IOException {
 		final ModelAndView mav = new ModelAndView();
-		final ConnectionManager connectionManager = ConnectionManagerPostgreWithCredentials.getConnectionManagerWithCredentials();
+		final ConnectionManager connectionManager = ConnectionManagerPostgreWithCredentials
+				.getConnectionManagerWithCredentials();
 		ModelAndView errorMav = new ModelAndView("error/error");
-		
-		if(connectionManager == null){
+
+		if (connectionManager == null) {
 			errorMav.addObject("errorDescription", "Acceso no autorizado.");
-			errorMav.addObject("errorMessage", "No deberia entrar a este sitio sin antes tener abierta la conexion con la base de datos.");
+			errorMav.addObject(
+					"errorMessage",
+					"No deberia entrar a este sitio sin antes tener abierta la conexion con la base de datos.");
 			errorMav.addObject("errorCode", "403");
 			return errorMav;
 		}
-		
+
 		try {
-			final Connection conn = connectionManager.getConnectionWithCredentials();
+			final Connection conn = connectionManager
+					.getConnectionWithCredentials();
 			mav.addObject("currentColumn", choiceColumn);
 			mav.addObject("dburl", connectionManager.getConnectionString());
 			DBTable table = DBUtils.getTableInDB(conn, currentTable);
-			if(table == null){
+			if (table == null) {
 				errorMav.addObject("errorDescription", "Tabla inválida.");
-				errorMav.addObject("errorMessage", "No se encontró la tabla que está buscando.");
+				errorMav.addObject("errorMessage",
+						"No se encontró la tabla que está buscando.");
 				errorMav.addObject("errorCode", "404");
 				return errorMav;
 			}
 			List<DBColumn> columns = table.getColumns();
 			mav.addObject("dbcolumns", columns);
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		return mav;
 	}
 

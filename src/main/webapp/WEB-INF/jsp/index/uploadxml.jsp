@@ -52,7 +52,8 @@
 						<fieldset>
 							<legend>Documento XML Multidim</legend>
 							<form:input type="file" class="input-xlarge" id="photo"
-										name="xml_doc" path="file" />
+										name="xml_doc" path="file" /> <br />
+							Seleccionar datos manualmente: <form:checkbox path="manualDataSelection"/>
 							<div class="form-actions">
 								<input type="submit" class="btn btn-primary" value="Subir documento " />
 							</div>
