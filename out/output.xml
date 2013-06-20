@@ -3,88 +3,100 @@
 <Schema name="contaminacion">
 	<Cube name="contaminacion" cache="true" enabled="true">
 		<Table name="contaminacionFact" />
-		<Dimension name="iniciotemporal" foreignkKey="dia">
-			<Hierarchy name="Hierarchy" hasAll="true" allMemberName="AllHierarchy"
-				primaryKey="dia">
+		<Dimension name="iniciotemporal" foreignKey="diainiciotemporal">
+			<Hierarchy name="calendar" hasAll="true" allMemberName="Allcalendar"
+				primaryKey="diainiciotemporal">
 				<Table name="iniciotemporal" />
 				<Level name="Month" uniqueMembers="false" levelType="Regular"
-					hideMemberIf="Never" column="Month-Mes" type="Numeric">
-					<Property name="Month-Mes" column="Month-Mes" type="Numeric" />
-					<Property name="Month-Nombre" column="Month-Nombre" type="String" />
+					hideMemberIf="Never" column="Month-Mes-iniciotemporal" type="Numeric">
+					<Property name="Month-Mes" column="Month-Mes-iniciotemporal"
+						type="Numeric" />
+					<Property name="Month-Nombre" column="Month-Nombre-iniciotemporal"
+						type="String" />
 				</Level>
 				<Level name="Year" uniqueMembers="false" levelType="Regular"
-					hideMemberIf="Never" column="Year-anio" type="Numeric">
-					<Property name="Year-anio" column="Year-anio" type="Numeric" />
-					<Property name="Year-esBisiesto" column="Year-esBisiesto"
+					hideMemberIf="Never" column="Year-anio-iniciotemporal" type="Numeric">
+					<Property name="Year-esBisiesto" column="Year-esBisiesto-iniciotemporal"
+						type="Numeric" />
+					<Property name="Year-anio" column="Year-anio-iniciotemporal"
 						type="Numeric" />
 				</Level>
 			</Hierarchy>
 		</Dimension>
-		<Dimension name="sustanciaDimsustancia" foreignkKey="denominacion">
-			<Hierarchy name="denominacion" hasAll="true"
-				allMemberName="AllsustanciaDimsustancia" primaryKey="denominacion">
+		<Dimension name="sustanciaDimsustancia" foreignKey="denominacionsustanciaDimsustancia">
+			<Hierarchy name="denominacionsustanciaDimsustancia" hasAll="true"
+				allMemberName="AllsustanciaDimsustancia" primaryKey="denominacionsustanciaDimsustancia">
 				<Table name="sustanciaDimsustancia" />
 				<Level name="sustanciaDimsustancia" type="String"
-					uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
-					<Property name="denominacion" column="denominacion" type="String" />
+					uniqueMembers="false" levelType="Regular" hideMemberIf="Never"
+					column="denominacionsustanciaDimsustancia">
+					<Property name="denominacionsustanciaDimsustancia" column="denominacionsustanciaDimsustancia"
+						type="String" />
 				</Level>
 			</Hierarchy>
 		</Dimension>
-		<Dimension name="fintemporal" foreignkKey="dia">
-			<Hierarchy name="Hierarchy" hasAll="true" allMemberName="AllHierarchy"
-				primaryKey="dia">
+		<Dimension name="fintemporal" foreignKey="diafintemporal">
+			<Hierarchy name="calendar" hasAll="true" allMemberName="Allcalendar"
+				primaryKey="diafintemporal">
 				<Table name="fintemporal" />
 				<Level name="Month" uniqueMembers="false" levelType="Regular"
-					hideMemberIf="Never" column="Month-Mes" type="Numeric">
-					<Property name="Month-Mes" column="Month-Mes" type="Numeric" />
-					<Property name="Month-Nombre" column="Month-Nombre" type="String" />
+					hideMemberIf="Never" column="Month-Mes-fintemporal" type="Numeric">
+					<Property name="Month-Mes" column="Month-Mes-fintemporal"
+						type="Numeric" />
+					<Property name="Month-Nombre" column="Month-Nombre-fintemporal"
+						type="String" />
 				</Level>
 				<Level name="Year" uniqueMembers="false" levelType="Regular"
-					hideMemberIf="Never" column="Year-anio" type="Numeric">
-					<Property name="Year-anio" column="Year-anio" type="Numeric" />
-					<Property name="Year-esBisiesto" column="Year-esBisiesto"
+					hideMemberIf="Never" column="Year-anio-fintemporal" type="Numeric">
+					<Property name="Year-esBisiesto" column="Year-esBisiesto-fintemporal"
+						type="Numeric" />
+					<Property name="Year-anio" column="Year-anio-fintemporal"
 						type="Numeric" />
 				</Level>
 			</Hierarchy>
 		</Dimension>
-		<Dimension name="fabricaFabrica" foreignkKey="Lat">
-			<Hierarchy name="Hierarchy" hasAll="true" allMemberName="AllHierarchy"
-				primaryKey="Lat">
+		<Dimension name="fabricaFabrica" foreignKey="LatfabricaFabrica">
+			<Hierarchy name="Geo location" hasAll="true" allMemberName="AllGeo location"
+				primaryKey="LatfabricaFabrica">
 				<Table name="fabricaFabrica" />
 				<Level name="Ciudad" uniqueMembers="false" levelType="Regular"
-					hideMemberIf="Never" column="Ciudad-nombre" type="String">
-					<Property name="Ciudad-poblacion" column="Ciudad-poblacion"
+					hideMemberIf="Never" column="Ciudad-nombre-fabricaFabrica" type="String">
+					<Property name="Ciudad-poblacion" column="Ciudad-poblacion-fabricaFabrica"
 						type="Numeric" />
-					<Property name="Ciudad-nombre" column="Ciudad-nombre"
+					<Property name="Ciudad-nombre" column="Ciudad-nombre-fabricaFabrica"
 						type="String" />
 				</Level>
 				<Level name="Pais" uniqueMembers="false" levelType="Regular"
-					hideMemberIf="Never" column="Pais-nombre" type="String">
-					<Property name="Pais-the_geom" column="Pais-the_geom"
+					hideMemberIf="Never" column="Pais-nombre-fabricaFabrica" type="String">
+					<Property name="Pais-the_geom" column="Pais-the_geom-fabricaFabrica"
 						type="Integer" />
-					<Property name="Pais-nombre" column="Pais-nombre" type="String" />
+					<Property name="Pais-nombre" column="Pais-nombre-fabricaFabrica"
+						type="String" />
 				</Level>
 			</Hierarchy>
-			<Hierarchy name="Hierarchy" hasAll="true" allMemberName="AllHierarchy"
-				primaryKey="Lat">
+			<Hierarchy name="Categoria" hasAll="true" allMemberName="AllCategoria"
+				primaryKey="LatfabricaFabrica">
 				<Table name="fabricaFabrica" />
-				<Level name="Empresa" uniqueMembers="false" levelType="Regular"
-					hideMemberIf="Never" column="Empresa-Nombre" type="String">
-					<Property name="Empresa-Nombre" column="Empresa-Nombre"
-						type="String" />
-					<Property name="Empresa-FactAnual" column="Empresa-FactAnual"
-						type="Numeric" />
-				</Level>
 				<Level name="Rubro" uniqueMembers="false" levelType="Regular"
-					hideMemberIf="Never" column="Rubro-tipoID" type="Numeric">
-					<Property name="Rubro-tipoDesc" column="Rubro-tipoDesc"
+					hideMemberIf="Never" column="Rubro-tipoID-fabricaFabrica" type="Numeric">
+					<Property name="Rubro-tipoID" column="Rubro-tipoID-fabricaFabrica"
+						type="Numeric" />
+					<Property name="Rubro-tipoDesc" column="Rubro-tipoDesc-fabricaFabrica"
 						type="String" />
-					<Property name="Rubro-tipoID" column="Rubro-tipoID" type="Numeric" />
+				</Level>
+				<Level name="Empresa" uniqueMembers="false" levelType="Regular"
+					hideMemberIf="Never" column="Empresa-Nombre-fabricaFabrica" type="String">
+					<Property name="Empresa-FactAnual" column="Empresa-FactAnual-fabricaFabrica"
+						type="Numeric" />
+					<Property name="Empresa-Nombre" column="Empresa-Nombre-fabricaFabrica"
+						type="String" />
 				</Level>
 			</Hierarchy>
 		</Dimension>
-		<Measure aggregator="sum" name="nube" datatype="Integer" />
-		<Measure aggregator="sum" name="emision" datatype="Numeric" />
-		<Measure aggregator="avg" name="emisionmala" datatype="Numeric" />
+		<Measure aggregator="sum" name="nube" column="nube" datatype="Integer" />
+		<Measure aggregator="avg" name="emisionmala" column="emisionmala"
+			datatype="Numeric" />
+		<Measure aggregator="sum" name="emision" column="emision"
+			datatype="Numeric" />
 	</Cube>
 </Schema>

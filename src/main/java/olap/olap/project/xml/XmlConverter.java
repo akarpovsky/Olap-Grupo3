@@ -76,8 +76,8 @@ public class XmlConverter {
 			dim.addAttribute("name", dimName);
 			for(Property p: dimension.getLevel().getProperties()){
 				if(p.isPK()){
-					dim.addAttribute("foreignkKey", p.getName());
-					pk = p.getName();
+					pk = p.getName()+dimName;
+					dim.addAttribute("foreignKey",pk );
 					pkType =  Attribute.valueOf(p.getType().toUpperCase()).toString();
 					break; //Lo hace sólo para el primero, si es compuesta se debe cambiar.
 				}
@@ -95,6 +95,7 @@ public class XmlConverter {
 				level.addAttribute("uniqueMembers", "false");
 				level.addAttribute("levelType", "Regular");
 				level.addAttribute("hideMemberIf", "Never");
+				level.addAttribute("column", pk);
 				Element prop = level.addElement("Property");
 				prop.addAttribute("name", pk);
 				prop.addAttribute("column", pk);
@@ -115,6 +116,7 @@ public class XmlConverter {
 			if(aggName.equals("st_union")) aggName = "sum";
 			measure.addAttribute("aggregator", aggName);
 			measure.addAttribute("name", m.getName());
+			measure.addAttribute("column", m.getName());
 			measure.addAttribute("datatype", Attribute.valueOf(m.getType().toUpperCase()).toString());
 		}
 		XMLWriter writer = new XMLWriter(
@@ -126,17 +128,17 @@ public class XmlConverter {
 	
 	private void handleHierarchy(Element dim, Hierarchy hierarchy, String pk, String pktype, String dimName) {
 		Element h = dim.addElement("Hierarchy");
-		h.addAttribute("name", h.getName());
+		h.addAttribute("name", hierarchy.getName());
 		h.addAttribute("hasAll", "true");
-		h.addAttribute("allMemberName", "All" + h.getName());
+		h.addAttribute("allMemberName", "All" + hierarchy.getName());
 		h.addAttribute("primaryKey", pk);
 		h.addElement("Table").addAttribute("name", dimName);
 		for(Level l : hierarchy.getLevels()) {
-			handleLevel(h, l);
+			handleLevel(h, l, dimName);
 		}
 	}
 	
-	private void handleLevel(Element hierarchy, Level l) {
+	private void handleLevel(Element hierarchy, Level l, String dimName) {
 		Element level = hierarchy.addElement("Level");
 		level.addAttribute("name", l.getName());
 		level.addAttribute("uniqueMembers", "false");
@@ -144,12 +146,12 @@ public class XmlConverter {
 		level.addAttribute("hideMemberIf", "Never");
 		for(Property p : l.getProperties()) {
 			if(p.isPK()){
-				level.addAttribute("column", l.getName()+"-"+p.getName());
+				level.addAttribute("column", l.getName()+"-"+p.getName()+"-" +dimName );
 				level.addAttribute("type",  Attribute.valueOf(p.getType().toUpperCase()).toString());
 			}
 			Element prop = level.addElement("Property");
 			prop.addAttribute("name", l.getName()+"-"+p.getName());
-			prop.addAttribute("column", l.getName()+"-"+p.getName());
+			prop.addAttribute("column", l.getName()+"-"+p.getName()+"-" +dimName);
 			prop.addAttribute("type", Attribute.valueOf(p.getType().toUpperCase()).toString());
 		}
 	}
@@ -185,7 +187,7 @@ public class XmlConverter {
 				parseProperties(level, e);
 				dim.setLevel(level);
 			} else if(e.getName().equals("hierarchy")) {
-				pasreHierarchy(dim, e);
+				parseHierarchy(dim, e);
 			} else {
             	throw new RuntimeException("invalid tag '" + e.getName() +"' level or hierarchy tags only accepted");
             }
@@ -208,7 +210,7 @@ public class XmlConverter {
 		}
 	}
 	
-	private void pasreHierarchy(Dimension dim, Element h) {
+	private void parseHierarchy(Dimension dim, Element h) {
 		Hierarchy hierachy = new Hierarchy(h.attributeValue("name"));
 		Iterator<Element> i = h.elementIterator();
 		while(i.hasNext()) {
