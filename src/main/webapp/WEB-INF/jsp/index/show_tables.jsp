@@ -36,6 +36,7 @@
 			${MDXtables}
 		</c:if>
 		<h1>XML MDX</h1>
+		<a class="btn btn-inverse" href="<c:url value='/bin/index/getoutputxml'/>"><i class="icon-download-alt icon-white"></i> Descargar</a>
 		<script type="syntaxhighlighter" class="brush: xml; toolbar: false;"><![CDATA[
 			<c:out value="${MDXxml}"/>
 		]]></script>

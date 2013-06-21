@@ -85,7 +85,7 @@ public class XmlConverter {
 		// Element table = cubeElem.addElement("Table");
 
 		addMeasuresToXml(multiDim, cubeElem);
-
+	
 		XMLWriter writer = new XMLWriter(new FileWriter(fileName));
 		writer.write(out);
 		writer.close();

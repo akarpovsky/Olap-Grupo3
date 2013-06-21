@@ -7,6 +7,7 @@ import java.util.List;
 public class DBTable {
 	
 	private String name;
+	private String oldName;
 	private List<DBColumn> columns;
 	
 	public DBTable(String name){
@@ -24,5 +25,13 @@ public class DBTable {
 	
 	public void addColumn(DBColumn column){
 		this.columns.add(column);
+	}
+
+	public String getOldName() {
+		return oldName;
+	}
+
+	public void setOldName(String oldName) {
+		this.oldName = oldName;
 	}
 }

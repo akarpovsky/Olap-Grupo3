@@ -4,6 +4,7 @@ package olap.olap.project.model.db;
 public class DBColumn {
 	
 	private String name;
+	private String oldName;
 	private String type;
 	private boolean isPK;
 
@@ -24,5 +25,13 @@ public class DBColumn {
 
 	public boolean isPK(){
 		return this.isPK;
+	}
+
+	public String getOldName() {
+		return oldName;
+	}
+
+	public void setOldName(String oldName) {
+		this.oldName = oldName;
 	}
 }

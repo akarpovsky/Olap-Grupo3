@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.Map.Entry;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.transform.TransformerException;
 
 import olap.olap.project.model.MultiDim;
@@ -23,6 +25,7 @@ import olap.olap.project.model.db.DBColumn;
 import olap.olap.project.model.db.DBTable;
 import olap.olap.project.model.db.DBUtils;
 import olap.olap.project.web.command.DBCredentialsForm;
+import olap.olap.project.web.command.TableSelectForm;
 import olap.olap.project.web.command.TableSelectionForm;
 import olap.olap.project.web.command.UploadXmlForm;
 import olap.olap.project.xml.MultidimCubeToMDXUtils;
@@ -32,7 +35,6 @@ import org.apache.commons.io.IOUtils;
 import org.dom4j.DocumentException;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.multipart.MultipartFile;
@@ -143,7 +145,7 @@ public class IndexController {
 			errors.rejectValue("empty", "file");
 			return mav;
 		} else {
-			
+
 			XmlConverter parser = new XmlConverter();
 
 			final ConnectionManager connectionManager = ConnectionManagerPostgreWithCredentials
@@ -159,7 +161,6 @@ public class IndexController {
 			}
 
 			ModelAndView mav2;
-			
 
 			if (!form.getManualDataSelection()) { // Automatic execution
 
@@ -180,9 +181,10 @@ public class IndexController {
 				} finally {
 					inputStream.close();
 				}
-				
+
 				mav2 = new ModelAndView("/index/show_tables");
-				
+				mav2.addObject("dburl", connectionManager.getConnectionString());
+
 				MultiDim xmlDocument = parser.parse(tmpFile);
 				boolean dbError = false;
 				xmlDocument.print();
@@ -214,58 +216,117 @@ public class IndexController {
 				String everything = "";
 				String everythingPretty = "";
 				try {
-					everything = IOUtils.toString(inputStream2).toLowerCase();
+					everything = IOUtils.toString(inputStream2);
 				} finally {
 					inputStream.close();
 				}
 				try {
 					everythingPretty = parser.getTransformedHtml(everything);
+					File write_file = new File("out/out.xml");
+					FileOutputStream fileOut = new FileOutputStream(write_file);
+					fileOut.write(everythingPretty.getBytes());
 				} catch (TransformerException e) {
 					e.printStackTrace();
 				}
 				mav2.addObject("MDXxml", everythingPretty);
-				
+
 			} else { // Manual execution
 				mav2 = new ModelAndView("/index/select_db_table");
 				mav2.addObject("dburl", connectionManager.getConnectionString());
-				try {
-//					Map<String, List<DBTable>> tableSelectionMap = new HashMap<String, List<DBTable>>();
-//					tableSelectionMap.put("contamination_fact",	 DBUtils.getTablesInDB(conn));
-//					tableSelectionMap.put("fabrica_fabrica",	 DBUtils.getTablesInDB(conn));
-//					tableSelectionMap.put("usuario_usuario",	 DBUtils.getTablesInDB(conn));
-//					Map<String, List<String>> tableSelectionMap = new HashMap<String, List<String>>();
-//					
-//					tableSelectionMap.put("contamination_fact",	Arrays.asList("a", "b", "c") );
-//					tableSelectionMap.put("pepe",	Arrays.asList("a", "b") );
-//					tableSelectionMap.put("fabrica_fabrica",	 DBUtils.getTablesInDB(conn));
-//					tableSelectionMap.put("usuario_usuario",	 DBUtils.getTablesInDB(conn));
-//					mav2.addObject("tableSelectionMap", tableSelectionMap);
 
-				} catch (Exception e) {
+				List<DBTable> existingDBTablesList = new ArrayList<DBTable>();
+
+				// TODO: Cambiar aqui
+				List<String> userSelectedFieldList = Arrays.asList("Tabla 1",
+						"Tabla 2", "Tabla 3");
+				try {
+					existingDBTablesList = DBUtils.getTablesInDB(conn);
+				} catch (SQLException e) {
 					e.printStackTrace();
 				}
-				TableSelectionForm f = new TableSelectionForm();
-//				Map<String,String> myMap = new HashMap<String, String>();
-//				myMap.put("contaminacion_fact", "valororiginal_contaminacion");
-//				myMap.put("pepe", "valororiginal_pepe");
-//				f.setTableSelectionValuesMap(myMap);
-				mav2.addObject("tableSelectionForm", f);
+				TableSelectForm f = new TableSelectForm();
+				mav2.addObject("existingDBTablesList", existingDBTablesList);
+				mav2.addObject("userSelectedFieldList", userSelectedFieldList);
+				mav2.addObject("tableSelectForm", f);
 
 			}
 
 			return mav2;
 		}
 	}
-	
+
 	@RequestMapping(method = RequestMethod.POST)
-	public ModelAndView testing(final HttpServletRequest req,
-			 final TableSelectionForm form)  {
-//			Map<String, String> elements = form.getTableSelectionValuesMap();
-			System.out.println("IMPRIMOOOOOOOO");
-//			for(Entry<String, String> e: elements.entrySet()){
-//				System.out.println(e.getKey() + "-" + e.getValue());
-//			}
-			return null;
+	public ModelAndView select_db_table(TableSelectForm form,
+			final HttpServletRequest req) {
+		for (Entry<String, String> entry : form.getTablesMap().entrySet()) {
+			System.out.println(entry.getKey() + ", " + entry.getValue());
+		}
+
+		ModelAndView mav = new ModelAndView();
+
+		final ConnectionManager connectionManager = ConnectionManagerPostgreWithCredentials
+				.getConnectionManagerWithCredentials();
+		ModelAndView errorMav = new ModelAndView("error/error");
+
+		if (connectionManager == null) {
+			errorMav.addObject("errorDescription", "Acceso no autorizado.");
+			errorMav.addObject(
+					"errorMessage",
+					"No deberia entrar a este sitio sin antes tener abierta la conexion con la base de datos.");
+			errorMav.addObject("errorCode", "403");
+			return errorMav;
+		}
+
+		try {
+			mav = new ModelAndView("/index/select_db_column");
+			final Connection conn = connectionManager
+					.getConnectionWithCredentials();
+			mav.addObject("dburl", connectionManager.getConnectionString());
+
+			Map<String, Map<String, List<DBColumn>>> userFieldToDBFieldMap = new HashMap<String, Map<String, List<DBColumn>>>();
+
+			for (Entry<String, String> entry : form.getTablesMap().entrySet()) {
+				Map<String, List<DBColumn>> tableDBFieldsMap = new HashMap<String, List<DBColumn>>();
+
+				System.out.println(entry.getKey() + ", " + entry.getValue());
+				DBTable table = DBUtils.getTableInDB(conn, entry.getValue());
+				if (table == null) {
+					errorMav.addObject("errorDescription", "Tabla inválida.");
+					errorMav.addObject("errorMessage",
+							"No se encontró la tabla que está buscando.");
+					errorMav.addObject("errorCode", "404");
+					return errorMav;
+				}
+				List<DBColumn> columns = table.getColumns();
+				// TODO: Aca hay que poner los fields del archivo para que el
+				// usuario elija
+				List<String> currentTableFields = Arrays.asList("field1",
+						"field2", "field3");
+
+				for (String f : currentTableFields) {
+					tableDBFieldsMap.put(entry.getKey() + ":" + f, columns);
+				}
+
+				userFieldToDBFieldMap.put(entry.getKey(), tableDBFieldsMap);
+			}
+			TableSelectForm f = new TableSelectForm();
+			mav.addObject("tableSelectForm", f);
+			mav.addObject("userFieldToDBFieldMap", userFieldToDBFieldMap);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return mav;
+	}
+
+	@RequestMapping(method = RequestMethod.POST)
+	public ModelAndView select_db_column(TableSelectForm form,
+			final HttpServletRequest req) {
+		for (Entry<String, String> entry : form.getTablesMap().entrySet()) {
+			System.out.println(entry.getKey() + " --> " + entry.getValue());
+		}
+		return null;
 	}
 
 	@RequestMapping(method = RequestMethod.GET)
@@ -296,7 +357,8 @@ public class IndexController {
 	}
 
 	@RequestMapping(method = RequestMethod.GET)
-	protected ModelAndView select_db_table(HttpServletRequest req) throws ServletException, IOException {
+	protected ModelAndView select_db_table(HttpServletRequest req,
+			TableSelectionForm form) throws ServletException, IOException {
 		final ModelAndView mav = new ModelAndView();
 		final ConnectionManager connectionManager = ConnectionManagerPostgreWithCredentials
 				.getConnectionManagerWithCredentials();
@@ -315,15 +377,14 @@ public class IndexController {
 	}
 
 	@RequestMapping(method = RequestMethod.GET)
-	protected ModelAndView select_db_column(HttpServletRequest req,
-			String currentTable, String choiceColumn) throws ServletException,
-			IOException {
-		final ModelAndView mav = new ModelAndView();
+	protected ModelAndView getOutputXML(HttpServletRequest req,
+			HttpServletResponse response) throws IOException {
+		
 		final ConnectionManager connectionManager = ConnectionManagerPostgreWithCredentials
 				.getConnectionManagerWithCredentials();
-		ModelAndView errorMav = new ModelAndView("error/error");
 
 		if (connectionManager == null) {
+			ModelAndView errorMav = new ModelAndView("error/error");
 			errorMav.addObject("errorDescription", "Acceso no autorizado.");
 			errorMav.addObject(
 					"errorMessage",
@@ -331,28 +392,17 @@ public class IndexController {
 			errorMav.addObject("errorCode", "403");
 			return errorMav;
 		}
+		
+		String file = "out.xml";
+		response.setHeader("Content-Disposition", "attachment;filename=" + file);
+		response.setContentType("text/plain");
 
-		try {
-			final Connection conn = connectionManager
-					.getConnectionWithCredentials();
-			mav.addObject("currentColumn", choiceColumn);
-			mav.addObject("dburl", connectionManager.getConnectionString());
-			DBTable table = DBUtils.getTableInDB(conn, currentTable);
-			if (table == null) {
-				errorMav.addObject("errorDescription", "Tabla inválida.");
-				errorMav.addObject("errorMessage",
-						"No se encontró la tabla que está buscando.");
-				errorMav.addObject("errorCode", "404");
-				return errorMav;
-			}
-			List<DBColumn> columns = table.getColumns();
-			mav.addObject("dbcolumns", columns);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return mav;
+		File down_file = new File("out/" + file);
+		FileInputStream fileIn = new FileInputStream(down_file);
+		
+		IOUtils.copy(fileIn, response.getOutputStream());
+		
+		response.flushBuffer();
+		return null;
 	}
-
 }

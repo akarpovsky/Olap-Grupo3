@@ -26,24 +26,30 @@
 
 	<%@ include file="/WEB-INF/jsp/header.jsp"%>
 	<div class="container well">
-		<h1>Elija la columna para ${currentColumn}</h1>
+		
+		<h1>Elija las columnas para cada campo</h1>
 		<span class="" >Conectado a <span class="badge badge-warning">${dburl}</span></span><br />
-
-		<form:form name="columnSelectionForm" class="form-horizontal span8"
-					action="selectColumn" method="POST"
-					commandName="columnSelectionForm" style="margin-top: 30px">
-			
-			<select name="table">
-			    <c:forEach items="${dbcolumns}" var="columnName">
-		            <option value="${columnName.name}">${columnName.name}</option>
-			    </c:forEach>
-		    </select>
-		    
-		    <input name="currentTable" type="hidden" value="${currentColumn}" />
-		    
-			<div class="form-actions">
-				<input type="submit" class="btn btn-primary" value="Elegir" />
-			</div>
+			<form:form name="tableSelectForm" class="form-horizontal span8"
+					action="select_db_column" method="POST"
+					commandName="tableSelectForm"  style="margin-top: 30px">
+				<fieldset>
+			    	<c:forEach items="${userFieldToDBFieldMap}" var="externalEntry">
+				    		<h3>${externalEntry.key}</h3>
+					    	<c:forEach items="${externalEntry.value}" var="entry">
+								<div class="control-group">
+						            <label class="control-label" for="input01">${entry.key}</label>
+						            <div class="controls">
+											<form:select path="tablesMap['${entry.key}']">
+												<form:options items="${entry.value}" itemValue="name" itemLabel="name"   />
+											</form:select>
+						            </div>
+					        	</div>
+							</c:forEach>
+						</c:forEach>
+						<div class="form-actions">
+							<input type="submit" class="btn btn-primary" value="Finalizar" />
+						</div>
+				</fieldset>
 		</form:form>
 	    
 	</div>
