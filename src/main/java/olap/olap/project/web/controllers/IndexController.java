@@ -364,10 +364,9 @@ public class IndexController {
 		XmlConverter xml = new XmlConverter();
 		FileInputStream inputStream = new FileInputStream("out/out.xml");
 		try {
-			String everything = IOUtils.toString(inputStream).toLowerCase();
+			String everything = IOUtils.toString(inputStream);
 			try {
-				xml.getTransformedHtml(everything);
-				mav.addObject("MDXxml", everything);
+				mav.addObject("MDXxml", xml.getTransformedHtml(everything));
 			} catch (TransformerException e) {
 				e.printStackTrace();
 			}
