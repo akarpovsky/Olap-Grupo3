@@ -6,9 +6,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -21,6 +23,7 @@ import olap.olap.project.model.db.DBColumn;
 import olap.olap.project.model.db.DBTable;
 import olap.olap.project.model.db.DBUtils;
 import olap.olap.project.web.command.DBCredentialsForm;
+import olap.olap.project.web.command.TableSelectionForm;
 import olap.olap.project.web.command.UploadXmlForm;
 import olap.olap.project.xml.MultidimCubeToMDXUtils;
 import olap.olap.project.xml.XmlConverter;
@@ -29,6 +32,7 @@ import org.apache.commons.io.IOUtils;
 import org.dom4j.DocumentException;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.Errors;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.multipart.MultipartFile;
@@ -224,11 +228,44 @@ public class IndexController {
 			} else { // Manual execution
 				mav2 = new ModelAndView("/index/select_db_table");
 				mav2.addObject("dburl", connectionManager.getConnectionString());
+				try {
+//					Map<String, List<DBTable>> tableSelectionMap = new HashMap<String, List<DBTable>>();
+//					tableSelectionMap.put("contamination_fact",	 DBUtils.getTablesInDB(conn));
+//					tableSelectionMap.put("fabrica_fabrica",	 DBUtils.getTablesInDB(conn));
+//					tableSelectionMap.put("usuario_usuario",	 DBUtils.getTablesInDB(conn));
+//					Map<String, List<String>> tableSelectionMap = new HashMap<String, List<String>>();
+//					
+//					tableSelectionMap.put("contamination_fact",	Arrays.asList("a", "b", "c") );
+//					tableSelectionMap.put("pepe",	Arrays.asList("a", "b") );
+//					tableSelectionMap.put("fabrica_fabrica",	 DBUtils.getTablesInDB(conn));
+//					tableSelectionMap.put("usuario_usuario",	 DBUtils.getTablesInDB(conn));
+//					mav2.addObject("tableSelectionMap", tableSelectionMap);
+
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				TableSelectionForm f = new TableSelectionForm();
+//				Map<String,String> myMap = new HashMap<String, String>();
+//				myMap.put("contaminacion_fact", "valororiginal_contaminacion");
+//				myMap.put("pepe", "valororiginal_pepe");
+//				f.setTableSelectionValuesMap(myMap);
+				mav2.addObject("tableSelectionForm", f);
 
 			}
 
 			return mav2;
 		}
+	}
+	
+	@RequestMapping(method = RequestMethod.POST)
+	public ModelAndView testing(final HttpServletRequest req,
+			 final TableSelectionForm form)  {
+//			Map<String, String> elements = form.getTableSelectionValuesMap();
+			System.out.println("IMPRIMOOOOOOOO");
+//			for(Entry<String, String> e: elements.entrySet()){
+//				System.out.println(e.getKey() + "-" + e.getValue());
+//			}
+			return null;
 	}
 
 	@RequestMapping(method = RequestMethod.GET)
@@ -259,8 +296,7 @@ public class IndexController {
 	}
 
 	@RequestMapping(method = RequestMethod.GET)
-	protected ModelAndView select_db_table(HttpServletRequest req,
-			String choiceTable) throws ServletException, IOException {
+	protected ModelAndView select_db_table(HttpServletRequest req) throws ServletException, IOException {
 		final ModelAndView mav = new ModelAndView();
 		final ConnectionManager connectionManager = ConnectionManagerPostgreWithCredentials
 				.getConnectionManagerWithCredentials();
@@ -273,19 +309,6 @@ public class IndexController {
 					"No deberia entrar a este sitio sin antes tener abierta la conexion con la base de datos.");
 			errorMav.addObject("errorCode", "403");
 			return errorMav;
-		}
-
-		try {
-			final Connection conn = connectionManager
-					.getConnectionWithCredentials();
-//			Map<String, List<DBTable>> tableSelectionMap = new HashMap<String, List<DBTable>>();
-//			mav.addObject("tableSelectionMap", tableSelectionMap);
-			mav.addObject("currentTable", choiceTable);
-			mav.addObject("dburl", connectionManager.getConnectionString());
-			mav.addObject("dbtables", DBUtils.getTablesInDB(conn));
-
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 
 		return mav;

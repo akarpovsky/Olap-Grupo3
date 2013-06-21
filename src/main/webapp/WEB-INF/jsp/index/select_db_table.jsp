@@ -26,25 +26,48 @@
 
 	<%@ include file="/WEB-INF/jsp/header.jsp"%>
 	<div class="container well">
-		<h1>Elija la tabla para ${currentTable}</h1>
-		<span class="" >Conectado a <span class="badge badge-warning">${dburl}</span></span><br />
-
 		<form:form name="tableSelectionForm" class="form-horizontal span8"
-					action="selectTable" method="POST"
+					action="testing" method="POST"
 					commandName="tableSelectionForm" style="margin-top: 30px">
-			
-			<select name="table">
-			    <c:forEach items="${dbtables}" var="tableName">
-		            <option value="${tableName.name}">${tableName.name}</option>
-			    </c:forEach>
-		    </select>
-		    
-		    <input name="currentTable" type="hidden" value="${currentTable}" />
-		    
+<!-- 			<input path="tableSelectionValues[contamination_fact]" type="text"/> -->
+<!-- 			<input path="tableSelectionValues[pepe]" type="text"/> -->
+<%-- 		    <c:forEach items="${tableSelectionForm2.tableSelectionValuesMap}" var="entry"> --%>
+<!-- 		        <tr> -->
+<%-- 		            <td>${entry.key}</td> --%>
+<%-- 		            <td><input path="tableSelectionValuesMap['${entry.key}']" value="${entry.value}"/></td> --%>
+<!-- 		        </tr> -->
+<%-- 		    </c:forEach> --%>
+		    <input path="basura" />
 			<div class="form-actions">
-				<input type="submit" class="btn btn-primary" value="Elegir" />
+				<input type="submit" class="btn btn-primary" value="Elegir !!!!!!" />
 			</div>
 		</form:form>
+		
+		<h1>Elija las tablas para cada dimensi&oacute;n</h1>
+		<span class="" >Conectado a <span class="badge badge-warning">${dburl}</span></span><br />
+
+<%-- 		<form:form name="tableSelectionForm" class="form-horizontal span8" --%>
+<%-- 					action="selectTable" method="POST" --%>
+<%-- 					commandName="tableSelectionForm" style="margin-top: 30px"> --%>
+<%-- 			<c:forEach var="entry" items="${tableSelectionMap}"> --%>
+<!-- 				<div class="control-group"> -->
+<%-- 		            <label class="control-label" for="input01">${entry.key}</label> --%>
+<!-- 		            <div class="controls"> -->
+<!-- 			             <select name="table"> -->
+<%-- 						    <c:forEach items="${entry.value}" var="tableName"> --%>
+<%-- 					            <option value="${tableName.name}">${tableName.name}</option> --%>
+<%-- 						    </c:forEach> --%>
+<!-- 			    		</select> -->
+<!-- 		            </div> -->
+<!-- 	        	</div> -->
+<%-- 			</c:forEach> --%>
+		    
+<%-- 		    <input name="currentTable" type="hidden" value="${currentTable}" /> --%>
+		    
+<!-- 			<div class="form-actions"> -->
+<!-- 				<input type="submit" class="btn btn-primary" value="Elegir" /> -->
+<!-- 			</div> -->
+<%-- 		</form:form> --%>
 	    
 	</div>
 	<%@ include file="/WEB-INF/jsp/footer.jsp"%>
