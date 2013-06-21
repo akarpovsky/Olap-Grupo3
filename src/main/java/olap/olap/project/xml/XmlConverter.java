@@ -83,6 +83,7 @@ public class XmlConverter {
 	 */
 	public void generateXml(MultiDim multiDim, String fileName)
 			throws IOException {
+		foreignks=new LinkedList<DBColumn>();
 		Document out = DocumentHelper.createDocument();
 
 		Element schema = out.addElement("Schema");

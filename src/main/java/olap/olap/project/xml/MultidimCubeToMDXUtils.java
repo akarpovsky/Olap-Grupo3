@@ -47,7 +47,6 @@ public class MultidimCubeToMDXUtils {
 		
 		createFactTable(sb, multidim.getCube());
 		
-		System.out.println(sb.toString().toLowerCase());
 		return sb.toString().toLowerCase();
 		
 	}
@@ -130,7 +129,6 @@ public class MultidimCubeToMDXUtils {
 	private static String createDimensionBasicFields(StringBuilder sb, Level l, String dimensionFullName) {
 		StringBuilder pks = new StringBuilder();
 		for(Property p : l.getProperties()){
-			System.out.println("Dimension fullname "  + dimensionFullName);
 			if(p.isPK()){
 				sb.append("\t\""+ p.getName() + "_"  + dimensionFullName + "\" " + (p.getType().equals("string") ? "char[]":p.getType()) + ",\n");
 				pks.append( "\"" + p.getName() + "_"  + dimensionFullName  + "\"" +",");

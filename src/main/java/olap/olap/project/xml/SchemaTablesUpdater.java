@@ -55,8 +55,10 @@ public class SchemaTablesUpdater {
 					.getNamedItem("name").getTextContent(),true);
 			NodeList dimensions = doc.getElementsByTagName("Dimension");
 			for (int i = 0; i < XmlConverter.foreignks.size(); i++) {
+				System.out.println("--->\t" + XmlConverter.foreignks.get(i).getName());
 				factTable.addColumn(XmlConverter.foreignks.get(i));
 			}
+			XmlConverter.foreignks.clear();
 			NodeList measures = doc.getElementsByTagName("Measure");
 			for(int i=0; i<measures.getLength();i++){
 				Node measure = measures.item(i);

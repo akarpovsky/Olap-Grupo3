@@ -50,6 +50,7 @@ public class IndexController {
 	@RequestMapping(method = RequestMethod.GET)
 	protected ModelAndView index(final DBCredentialsForm form,
 			HttpServletRequest req) throws ServletException, IOException {
+		
 		final ModelAndView mav = new ModelAndView("index/index");
 
 		final ConnectionManager connectionManager = ConnectionManagerPostgreWithCredentials
@@ -75,7 +76,7 @@ public class IndexController {
 	@RequestMapping(method = RequestMethod.GET)
 	protected ModelAndView uploadxml(final UploadXmlForm form,
 			HttpServletRequest req) throws ServletException, IOException {
-
+		
 		ModelAndView mav = new ModelAndView();
 		final ConnectionManager connectionManager = ConnectionManagerPostgreWithCredentials
 				.getConnectionManagerWithCredentials();
@@ -181,6 +182,7 @@ public class IndexController {
 			}
 			
 			MultiDim xmlDocument = parser.parse(tmpFile);
+			tmpFile.delete();
 			req.getSession().setAttribute("originalMultidim", xmlDocument);
 
 			if (!form.getManualDataSelection()) { // Automatic execution
@@ -253,7 +255,20 @@ public class IndexController {
 				mav2.addObject("existingDBTablesList", existingDBTablesList);
 				mav2.addObject("userSelectedFieldList", userSelectedFieldList);
 				mav2.addObject("tableSelectForm", f);
+				
 				req.getSession().setAttribute("originalXMLDataList", sessionTablesList);
+				List<DBTable> sessionTableList2 = (List<DBTable>) req.getSession().getAttribute("originalXMLDataList");
+				System.out.println("--NUEVO--");
+				if(sessionTableList2 != null){
+					for(DBTable t: sessionTableList2){
+						System.out.println("Session table: " + t.getName());
+						for (DBColumn dbcol : t.getColumns()) {
+							System.out.println("\t col: " + dbcol.getName());
+						}
+					}
+					System.out.println("--/NUEVO--");
+				}
+				
 			}
 
 			return mav2;
@@ -291,6 +306,7 @@ public class IndexController {
 			Map<String, Map<String, List<DBColumn>>> userFieldToDBFieldMap = new HashMap<String, Map<String, List<DBColumn>>>();
 			
 			List<DBTable> sessionTableList = (List<DBTable>) req.getSession().getAttribute("originalXMLDataList");
+	
 			
 			Map<String, String> tablesMap = form.getTablesMap();
 			
@@ -298,6 +314,7 @@ public class IndexController {
 			printDBTableList(sessionTableList);
 			System.out.println("--/ANTES--");
 
+			
 			// Update selected tables in session object
 			for(DBTable t: sessionTableList){
 				t.update(tablesMap.get(t.getName()));
@@ -308,8 +325,9 @@ public class IndexController {
 			System.out.println("--DESPUES--");
 			printDBTableList(sessionTableList);
 			System.out.println("--/DESPUES--");
-			
+
 			for(DBTable t: sessionTableList){
+				System.out.println("Session table: " + t.getName());
 				Map<String, List<DBColumn>> tableDBFieldsMap = new HashMap<String, List<DBColumn>>();
 				DBTable table = DBUtils.getTableInDB(conn, t.getName());
 				
@@ -324,6 +342,7 @@ public class IndexController {
 				List<DBColumn> columns = table.getColumns();
 				
 				for (DBColumn dbcol : t.getColumns()) {
+					System.out.println("\t col: " + dbcol.getName());
 					tableDBFieldsMap.put(dbcol.getName(), columns);
 				}
 				
