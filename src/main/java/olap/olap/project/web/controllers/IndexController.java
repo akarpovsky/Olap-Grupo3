@@ -2,6 +2,7 @@ package olap.olap.project.web.controllers;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.Connection;
@@ -181,7 +182,8 @@ public class IndexController {
 			}
 			
 			MultiDim xmlDocument = parser.parse(tmpFile);
-			
+			req.getSession().setAttribute("originalMultidim", xmlDocument);
+
 			if (!form.getManualDataSelection()) { // Automatic execution
 
 				mav2 = new ModelAndView("/index/show_tables");
@@ -240,7 +242,6 @@ public class IndexController {
 
 				List<DBTable> existingDBTablesList = new ArrayList<DBTable>();
 
-//				List<String> userSelectedFieldList = Arrays.asList("Tabla 1", "Tabla 2", "Tabla 3");
 				
 				List<DBTable> userSelectedFieldList = userSelectedTablesList;
 				
@@ -254,7 +255,6 @@ public class IndexController {
 				mav2.addObject("userSelectedFieldList", userSelectedFieldList);
 				mav2.addObject("tableSelectForm", f);
 				req.getSession().setAttribute("originalXMLDataList", userSelectedTablesList);
-
 			}
 
 			return mav2;
@@ -316,7 +316,6 @@ public class IndexController {
 				for (DBColumn dbcol : t.getColumns()) {
 					tableDBFieldsMap.put(dbcol.getName(), columns);
 				}
-				System.out.println("Pongo: " + t.getOldName());
 				userFieldToDBFieldMap.put(t.getOldName(), tableDBFieldsMap);
 			}
 			
@@ -340,26 +339,41 @@ public class IndexController {
 
 	@RequestMapping(method = RequestMethod.POST)
 	public ModelAndView select_db_column(TableSelectForm form,
-			final HttpServletRequest req) {
+			final HttpServletRequest req) throws Exception {
 
-		ModelAndView mav = new ModelAndView("/index/select_db_column");
+		ModelAndView mav = new ModelAndView("/index/show_manual_mdx");
 		
 		List<DBTable> userSelectedTablesList = (List<DBTable>) req.getSession().getAttribute("originalXMLDataList");
 		
 		Map<String, String> tablesMap = form.getTablesMap();
 		
 		for(Entry<String, String> t1: tablesMap.entrySet()){
-//			System.out.println("Itero por " + t1.getKey() + " split: " + t1.getKey().split(":")[0]);
 			for(DBTable t: userSelectedTablesList){
-//				System.out.println("Cambio: " + t1.getKey().split(":")[0] + " por " + t1.getKey().split(":")[1]);
 				if(t.getOldName().equals(t1.getKey().split(":")[0])){
 					t.updateColumn(t1.getKey().split(":")[1],t1.getValue());
 				}
 			}
 		}
 		
-		SchemaTablesUpdater stu = new SchemaTablesUpdater();
+		try {
+			SchemaTablesUpdater.putTables(userSelectedTablesList, (MultiDim) req.getSession().getAttribute("originalMultidim"), "out/out.xml");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		
+		XmlConverter xml = new XmlConverter();
+		FileInputStream inputStream = new FileInputStream("out/out.xml");
+		try {
+			String everything = IOUtils.toString(inputStream).toLowerCase();
+			try {
+				xml.getTransformedHtml(everything);
+				mav.addObject("MDXxml", everything);
+			} catch (TransformerException e) {
+				e.printStackTrace();
+			}
+		} finally {
+			inputStream.close();
+		}
 		
 		return mav;
 	}
