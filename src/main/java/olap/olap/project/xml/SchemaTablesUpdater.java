@@ -31,6 +31,74 @@ import olap.olap.project.model.db.DBColumn;
 import olap.olap.project.model.db.DBTable;
 
 public class SchemaTablesUpdater {
+	public static List<DBTable> getTables(MultiDim multiDim)
+			throws IOException, DocumentException {
+		List<DBTable> ret = new LinkedList<DBTable>();
+		XmlConverter xml = new XmlConverter();
+		String fileName = "out/out.xml";
+		xml.generateXml(multiDim, fileName);
+
+		try {
+			DocumentBuilderFactory docFactory = DocumentBuilderFactory
+					.newInstance();
+			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+			Document doc = docBuilder.parse(fileName);
+			// Get the root element
+
+			// Get the staff element , it may not working if tag has spaces, or
+			// whatever weird characters in front...it's better to use
+			// getElementsByTagName() to get it directly.
+			// Node staff = company.getFirstChild();
+			NodeList tables = doc.getElementsByTagName("Table");
+			Node fTable = tables.item(0);
+			DBTable factTable = new DBTable(fTable.getAttributes()
+					.getNamedItem("name").getTextContent(),true);
+			NodeList dimensions = doc.getElementsByTagName("Dimension");
+			for (int i = 0; i < XmlConverter.foreignks.size(); i++) {
+				factTable.addColumn(XmlConverter.foreignks.get(i));
+			}
+			ret.add(factTable);
+			for (int i = 0; i < dimensions.getLength(); i++) {
+				Node dimension = dimensions.item(i);
+				DBTable table = new DBTable(dimension.getAttributes().getNamedItem("name").getNodeValue());
+				NodeList hierarchies = dimension.getChildNodes();
+				for (int j = 0; j < hierarchies.getLength(); j++) {
+					Node hierarchy = hierarchies.item(j);
+					NodeList children = hierarchy.getChildNodes();
+					for (int l = 0; l < children.getLength(); l++) {
+						Node level = children.item(l);
+						if (level.getNodeName().equals("Level")) {
+							NodeList properties = level.getChildNodes();
+							for (int k = 0; k < properties.getLength(); k++) {
+								Node property = properties.item(k);
+								NamedNodeMap atributes = property.getAttributes();
+								String name = atributes.getNamedItem("column").getNodeValue();
+								String type = atributes.getNamedItem("type").getNodeValue();
+								Boolean isPK = false;
+								table.addColumn(new DBColumn(name, type, isPK));
+							}
+						}
+					}
+
+				}
+
+				ret.add(table);
+			}
+
+			System.out.println("Done");
+
+		} catch (ParserConfigurationException pce) {
+			pce.printStackTrace();
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+		} catch (SAXException sae) {
+			sae.printStackTrace();
+		}
+
+		return ret;
+
+	}
+	
 	public static List<DBTable> getTables(String fileNameIn)
 			throws IOException, DocumentException {
 		List<DBTable> ret = new LinkedList<DBTable>();

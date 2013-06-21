@@ -29,6 +29,7 @@ import olap.olap.project.web.command.TableSelectForm;
 import olap.olap.project.web.command.TableSelectionForm;
 import olap.olap.project.web.command.UploadXmlForm;
 import olap.olap.project.xml.MultidimCubeToMDXUtils;
+import olap.olap.project.xml.SchemaTablesUpdater;
 import olap.olap.project.xml.XmlConverter;
 
 import org.apache.commons.io.IOUtils;
@@ -162,30 +163,31 @@ public class IndexController {
 
 			ModelAndView mav2;
 
+			MultipartFile xmlfile = form.getFile();
+			File tmpFile = new File(System.getProperty("java.io.tmpdir")
+					+ System.getProperty("file.separator")
+					+ xmlfile.getOriginalFilename());
+
+			xmlfile.transferTo(tmpFile);
+
+			FileInputStream inputStream = new FileInputStream(tmpFile);
+			try {
+				String everything = IOUtils.toString(inputStream)
+						.toLowerCase();
+				FileOutputStream outputStream = new FileOutputStream(
+						tmpFile);
+				IOUtils.write(everything, outputStream);
+			} finally {
+				inputStream.close();
+			}
+			
+			MultiDim xmlDocument = parser.parse(tmpFile);
+			
 			if (!form.getManualDataSelection()) { // Automatic execution
-
-				MultipartFile xmlfile = form.getFile();
-				File tmpFile = new File(System.getProperty("java.io.tmpdir")
-						+ System.getProperty("file.separator")
-						+ xmlfile.getOriginalFilename());
-
-				xmlfile.transferTo(tmpFile);
-
-				FileInputStream inputStream = new FileInputStream(tmpFile);
-				try {
-					String everything = IOUtils.toString(inputStream)
-							.toLowerCase();
-					FileOutputStream outputStream = new FileOutputStream(
-							tmpFile);
-					IOUtils.write(everything, outputStream);
-				} finally {
-					inputStream.close();
-				}
 
 				mav2 = new ModelAndView("/index/show_tables");
 				mav2.addObject("dburl", connectionManager.getConnectionString());
 
-				MultiDim xmlDocument = parser.parse(tmpFile);
 				boolean dbError = false;
 				xmlDocument.print();
 				String MDXtables = null;
@@ -231,14 +233,16 @@ public class IndexController {
 				mav2.addObject("MDXxml", everythingPretty);
 
 			} else { // Manual execution
+				
+				List<DBTable> userSelectedTablesList = SchemaTablesUpdater.getTables(xmlDocument);
+				
 				mav2 = new ModelAndView("/index/select_db_table");
 				mav2.addObject("dburl", connectionManager.getConnectionString());
 
 				List<DBTable> existingDBTablesList = new ArrayList<DBTable>();
 
-				// TODO: Cambiar aqui
-				List<String> userSelectedFieldList = Arrays.asList("Tabla 1",
-						"Tabla 2", "Tabla 3");
+//				List<String> userSelectedFieldList = Arrays.asList("Tabla 1", "Tabla 2", "Tabla 3");
+				List<DBTable> userSelectedFieldList = userSelectedTablesList;
 				try {
 					existingDBTablesList = DBUtils.getTablesInDB(conn);
 				} catch (SQLException e) {

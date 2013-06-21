@@ -35,9 +35,9 @@
 				<fieldset>
 				    	<c:forEach items="${userSelectedFieldList}" var="entry">
 							<div class="control-group">
-					            <label class="control-label" for="input01">${entry}</label>
+					            <label class="control-label" for="input01">${entry.name}</label>
 					            <div class="controls">
-										<form:select path="tablesMap['${entry}']">
+										<form:select path="tablesMap['${entry.name}']">
 											<form:options items="${existingDBTablesList}" itemValue="name" itemLabel="name"   />
 										</form:select>
 					            </div>
