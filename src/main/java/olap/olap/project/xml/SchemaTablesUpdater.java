@@ -250,13 +250,28 @@ public class SchemaTablesUpdater {
 		} catch (SAXException sae) {
 			sae.printStackTrace();
 		} catch (TransformerConfigurationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (TransformerException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
+		FileInputStream inputStream2 = new FileInputStream(
+				fileNameOut);
+		String everything = "";
+		String everythingPretty = "";
+		try {
+			everything = IOUtils.toString(inputStream2);
+		} finally {
+			inputStream2.close();
+		}
+		try {
+			everythingPretty = xml.getTransformedHtml(everything);
+			File write_file = new File(fileNameOut);
+			FileOutputStream fileOut = new FileOutputStream(write_file);
+			fileOut.write(everythingPretty.getBytes());
+		} catch (TransformerException e) {
+			e.printStackTrace();
+		}
 
 	}
 	

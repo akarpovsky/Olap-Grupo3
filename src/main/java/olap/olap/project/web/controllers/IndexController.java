@@ -2,7 +2,6 @@ package olap.olap.project.web.controllers;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.Connection;
@@ -235,7 +234,7 @@ public class IndexController {
 
 			} else { // Manual execution
 				
-				List<DBTable> userSelectedTablesList = SchemaTablesUpdater.getTables(xmlDocument, "out/out.xml");
+				List<DBTable> sessionTablesList = SchemaTablesUpdater.getTables(xmlDocument, "out/out.xml");
 				
 				mav2 = new ModelAndView("/index/select_db_table");
 				mav2.addObject("dburl", connectionManager.getConnectionString());
@@ -243,7 +242,7 @@ public class IndexController {
 				List<DBTable> existingDBTablesList = new ArrayList<DBTable>();
 
 				
-				List<DBTable> userSelectedFieldList = userSelectedTablesList;
+				List<DBTable> userSelectedFieldList = sessionTablesList;
 				
 				try {
 					existingDBTablesList = DBUtils.getTablesInDB(conn);
@@ -254,7 +253,7 @@ public class IndexController {
 				mav2.addObject("existingDBTablesList", existingDBTablesList);
 				mav2.addObject("userSelectedFieldList", userSelectedFieldList);
 				mav2.addObject("tableSelectForm", f);
-				req.getSession().setAttribute("originalXMLDataList", userSelectedTablesList);
+				req.getSession().setAttribute("originalXMLDataList", sessionTablesList);
 			}
 
 			return mav2;
@@ -291,18 +290,29 @@ public class IndexController {
 			
 			Map<String, Map<String, List<DBColumn>>> userFieldToDBFieldMap = new HashMap<String, Map<String, List<DBColumn>>>();
 			
-			List<DBTable> userSelectedTablesList = (List<DBTable>) req.getSession().getAttribute("originalXMLDataList");
+			List<DBTable> sessionTableList = (List<DBTable>) req.getSession().getAttribute("originalXMLDataList");
 			
 			Map<String, String> tablesMap = form.getTablesMap();
 			
+			System.out.println("--ANTES--");
+			printDBTableList(sessionTableList);
+			System.out.println("--/ANTES--");
+
 			// Update selected tables in session object
-			for(DBTable t: userSelectedTablesList){
+			for(DBTable t: sessionTableList){
 				t.update(tablesMap.get(t.getName()));
 			}
 			
-			for(DBTable t: userSelectedTablesList){
+//			Thread.currentThread().sleep(1000);//sleep for 1000 ms.
+			
+			System.out.println("--DESPUES--");
+			printDBTableList(sessionTableList);
+			System.out.println("--/DESPUES--");
+			
+			for(DBTable t: sessionTableList){
 				Map<String, List<DBColumn>> tableDBFieldsMap = new HashMap<String, List<DBColumn>>();
 				DBTable table = DBUtils.getTableInDB(conn, t.getName());
+				
 				if (table == null) {
 					errorMav.addObject("errorDescription", "Tabla inválida.");
 					errorMav.addObject("errorMessage",
@@ -310,12 +320,13 @@ public class IndexController {
 					errorMav.addObject("errorCode", "404");
 					return errorMav;
 				}
+				
 				List<DBColumn> columns = table.getColumns();
-				List<DBColumn> currentTableFields = columns;
 				
 				for (DBColumn dbcol : t.getColumns()) {
 					tableDBFieldsMap.put(dbcol.getName(), columns);
 				}
+				
 				userFieldToDBFieldMap.put(t.getOldName(), tableDBFieldsMap);
 			}
 			
@@ -340,7 +351,7 @@ public class IndexController {
 	@RequestMapping(method = RequestMethod.POST)
 	public ModelAndView select_db_column(TableSelectForm form,
 			final HttpServletRequest req) throws Exception {
-
+//		Thread.currentThread().sleep(1000);//sleep for 1000 ms.
 		ModelAndView mav = new ModelAndView("/index/show_manual_mdx");
 		
 		List<DBTable> userSelectedTablesList = (List<DBTable>) req.getSession().getAttribute("originalXMLDataList");
@@ -363,17 +374,19 @@ public class IndexController {
 		
 		XmlConverter xml = new XmlConverter();
 		FileInputStream inputStream = new FileInputStream("out/out.xml");
+		String everything = "";
 		try {
-			String everything = IOUtils.toString(inputStream);
+			everything = IOUtils.toString(inputStream);
 			try {
-				mav.addObject("MDXxml", xml.getTransformedHtml(everything));
+				everything = xml.getTransformedHtml(everything);
 			} catch (TransformerException e) {
 				e.printStackTrace();
 			}
 		} finally {
 			inputStream.close();
 		}
-		
+		mav.addObject("MDXxml", everything);
+//		Thread.currentThread().sleep(1000);//sleep for 1000 ms.
 		return mav;
 	}
 
@@ -426,7 +439,7 @@ public class IndexController {
 
 	@RequestMapping(method = RequestMethod.GET)
 	protected ModelAndView getOutputXML(HttpServletRequest req,
-			HttpServletResponse response) throws IOException {
+			HttpServletResponse response) throws IOException, InterruptedException {
 		
 		final ConnectionManager connectionManager = ConnectionManagerPostgreWithCredentials
 				.getConnectionManagerWithCredentials();
@@ -450,6 +463,7 @@ public class IndexController {
 		
 		IOUtils.copy(fileIn, response.getOutputStream());
 		
+		Thread.currentThread().sleep(1000);//sleep for 1000 ms
 		response.flushBuffer();
 		return null;
 	}
