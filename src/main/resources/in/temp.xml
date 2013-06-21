@@ -1,0 +1,60 @@
+<multidim>
+	<dimension name="fabrica">
+		<level>
+			<property id="true" type="numeric">lat</property>
+			<property type="numeric">cantemple</property>
+			<property id="true" type="numeric">lon</property>
+		</level>
+		<hierarchy name="categoria">
+			<level name="empresa" pos="1">
+				<property id="true" type="string">
+					nombre
+				</property>
+				<property type="numeric">factanual</property>
+			</level>
+			<level name="rubro" pos="2">
+				<property id="true" type="numeric">tipoid</property>
+				<property type="string">tipodesc</property>
+			</level>
+		</hierarchy>
+		<hierarchy name="geo location">
+			<level name="pais" pos="2">
+				<property id="true" type="string">nombre</property>
+				<property type="geometry">the_geom</property>
+			</level>
+			<level name="ciudad" pos="1">
+				<property id="true" type="string">nombre</property>
+				<property type="numeric">poblacion</property>
+			</level>
+		</hierarchy>
+	</dimension>
+	<dimension name="temporal">
+		<level>
+			<property id="true" type="timestamp">dia</property>
+		</level>
+		<hierarchy name="calendar">
+			<level name="month" pos="1">
+				<property type="string">nombre</property>
+				<property id="true" type="numeric">mes</property>
+			</level>
+			<level name="year" pos="2">
+				<property id="true" type="numeric">anio</property>
+				<property type="numeric" id="false">esbisiesto</property>
+			</level>
+		</hierarchy>
+	</dimension>
+	<dimension name="sustancia">
+		<level>
+			<property id="true" type="string">denominacion</property>
+		</level>
+	</dimension>
+	<cubo name="contaminacion">
+		<measure name="emision" type="numeric" agg="sum" />
+		<measure name="emisionmala" type="numeric" agg="avg" />
+		<measure name="nube" type="geometry" agg="st_union" />
+		<dimension name="fabrica" ptr="fabrica" />
+		<dimension name="inicio" ptr="temporal" />
+		<dimension name="fin" ptr="temporal" />
+		<dimension name="sustanciadim" ptr="sustancia" />
+	</cubo>
+</multidim>

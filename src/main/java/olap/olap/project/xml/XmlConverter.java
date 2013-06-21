@@ -7,17 +7,14 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.StringWriter;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Scanner;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
@@ -36,10 +33,7 @@ import olap.olap.project.model.Measure;
 import olap.olap.project.model.MultiDim;
 import olap.olap.project.model.Property;
 import olap.olap.project.model.db.DBColumn;
-import olap.olap.project.model.db.DBTable;
 
-import org.apache.commons.collections.ListUtils;
-import org.apache.commons.collections.SetUtils;
 import org.apache.commons.io.IOUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -55,6 +49,7 @@ public class XmlConverter {
 	 * Converts a xmlFile to a MultiDim
 	 */
 	public static List<DBColumn> foreignks = new LinkedList<DBColumn>();
+
 	public MultiDim parse(File xml) throws DocumentException, IOException {
 		MultiDim multiDim = new MultiDim();
 		SAXReader reader = new SAXReader();
@@ -83,7 +78,7 @@ public class XmlConverter {
 	 */
 	public void generateXml(MultiDim multiDim, String fileName)
 			throws IOException {
-		foreignks=new LinkedList<DBColumn>();
+		foreignks = new LinkedList<DBColumn>();
 		Document out = DocumentHelper.createDocument();
 
 		Element schema = out.addElement("Schema");
@@ -98,7 +93,7 @@ public class XmlConverter {
 		// Element table = cubeElem.addElement("Table");
 
 		addMeasuresToXml(multiDim, cubeElem);
-//		List<DBTable> tables = getTables(out);
+		// List<DBTable> tables = getTables(out);
 		XMLWriter writer = new XMLWriter(new FileWriter(fileName));
 		writer.write(out);
 		writer.close();
@@ -146,7 +141,6 @@ public class XmlConverter {
 		}
 	}
 
-	
 	private void addHierarchiesToXml(Dimension dimension, Element dim,
 			String pk, String dimName, String pkType) {
 
@@ -186,8 +180,8 @@ public class XmlConverter {
 		for (Measure m : multiDim.getCube().getMeasures()) {
 			Element measure = cubeElem.addElement("Measure");
 			String aggName = m.getAgg();
-//			if (aggName.equals("st_union"))
-//				aggName = "sum";
+			// if (aggName.equals("st_union"))
+			// aggName = "sum";
 			measure.addAttribute("aggregator", aggName);
 			measure.addAttribute("name", m.getName());
 			measure.addAttribute("column", m.getName());
@@ -205,10 +199,8 @@ public class XmlConverter {
 		h.addAttribute("primaryKey", pk);
 		h.addElement("Table").addAttribute("name", dimName);
 		for (Level l : hierarchy.getLevels()) {
-			System.out.println("pos: "+ l.getPos());
 			handleLevel(h, l, dimName);
 		}
-		System.out.println("-------");
 	}
 
 	private void handleLevel(Element hierarchy, Level l, String dimName) {
@@ -306,10 +298,32 @@ public class XmlConverter {
 	}
 
 	public String getTransformedHtml(String xml) throws TransformerException {
-		byte[] xsl = getStringFromFile(new File("in/transform.xslt"))
+//		URL url = Thread.currentThread().getContextClassLoader().getResource("in/transform.xslt");
+//		String path = new File(".").getAbsolutePath() + "/src/main/resources/in/transform.xslt"; 
+		InputStream path = getClass().getClassLoader().getResourceAsStream("in/transform.xslt");
+		
+		byte[] xsl = getStringFromFile(InputStreamAFile(path))
 				.getBytes();
-
 		return getTransformedHtml(xml.getBytes(), xsl);
+	}
+
+	public File InputStreamAFile(InputStream entrada) {
+		try {
+			File f = File.createTempFile("temp","file");// Aqui le dan el nombre y/o con la
+											// ruta del archivo salida
+			OutputStream salida = new FileOutputStream(f);
+			byte[] buf = new byte[1024];// Actualizado me olvide del 1024
+			int len;
+			while ((len = entrada.read(buf)) > 0) {
+				salida.write(buf, 0, len);
+			}
+			salida.close();
+			entrada.close();
+			return f;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	private String getTransformedHtml(byte[] xml, byte[] xsl)
@@ -351,18 +365,17 @@ public class XmlConverter {
 		}
 		MultiDim multiDim = xml.parse(new File("in/temp.xml"));
 		xml.generateXml(multiDim, "out/output.xml");
-		
-//		FileInputStream inputStream = new FileInputStream("out/out.xml");
-//		try {
-//			String everything = IOUtils.toString(inputStream).toLowerCase();
-//			try {
-//				System.out.println(xml.getTransformedHtml(everything));
-//			} catch (TransformerException e) {
-//				e.printStackTrace();
-//			}
-//		} finally {
-//			inputStream.close();
-//		}
+
+		// FileInputStream inputStream = new FileInputStream("out/out.xml");
+		// try {
+		// String everything = IOUtils.toString(inputStream).toLowerCase();
+		// try {
+		// } catch (TransformerException e) {
+		// e.printStackTrace();
+		// }
+		// } finally {
+		// inputStream.close();
+		// }
 
 	}
 }

@@ -44,6 +44,11 @@ import org.springframework.web.servlet.ModelAndView;
 @RequestMapping("/")
 public class IndexController {
 
+	
+	private static File myFile = new File(System.getProperty("user.dir"), "out.xml");  //or "user.home" 
+	private static String myFileNameOut = myFile.getAbsolutePath();
+	
+	
 	public IndexController() {
 	}
 
@@ -167,7 +172,7 @@ public class IndexController {
 			File tmpFile = new File(System.getProperty("java.io.tmpdir")
 					+ System.getProperty("file.separator")
 					+ xmlfile.getOriginalFilename());
-
+			
 			xmlfile.transferTo(tmpFile);
 
 			FileInputStream inputStream = new FileInputStream(tmpFile);
@@ -213,10 +218,10 @@ public class IndexController {
 									"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"));
 				}
 				// Generate MDX xml
-				parser.generateXml(xmlDocument, "out/out.xml");
+				parser.generateXml(xmlDocument, myFileNameOut);
 
 				FileInputStream inputStream2 = new FileInputStream(
-						"out/out.xml");
+						myFileNameOut);
 				String everything = "";
 				String everythingPretty = "";
 				try {
@@ -226,7 +231,7 @@ public class IndexController {
 				}
 				try {
 					everythingPretty = parser.getTransformedHtml(everything);
-					File write_file = new File("out/out.xml");
+					File write_file = new File(myFileNameOut);
 					FileOutputStream fileOut = new FileOutputStream(write_file);
 					fileOut.write(everythingPretty.getBytes());
 				} catch (TransformerException e) {
@@ -236,7 +241,7 @@ public class IndexController {
 
 			} else { // Manual execution
 				
-				List<DBTable> sessionTablesList = SchemaTablesUpdater.getTables(xmlDocument, "out/out.xml");
+				List<DBTable> sessionTablesList = SchemaTablesUpdater.getTables(xmlDocument, myFileNameOut);
 				
 				mav2 = new ModelAndView("/index/select_db_table");
 				mav2.addObject("dburl", connectionManager.getConnectionString());
@@ -258,16 +263,6 @@ public class IndexController {
 				
 				req.getSession().setAttribute("originalXMLDataList", sessionTablesList);
 				List<DBTable> sessionTableList2 = (List<DBTable>) req.getSession().getAttribute("originalXMLDataList");
-				System.out.println("--NUEVO--");
-				if(sessionTableList2 != null){
-					for(DBTable t: sessionTableList2){
-						System.out.println("Session table: " + t.getName());
-						for (DBColumn dbcol : t.getColumns()) {
-							System.out.println("\t col: " + dbcol.getName());
-						}
-					}
-					System.out.println("--/NUEVO--");
-				}
 				
 			}
 
@@ -278,9 +273,6 @@ public class IndexController {
 	@RequestMapping(method = RequestMethod.POST)
 	public ModelAndView select_db_table(TableSelectForm form,
 			final HttpServletRequest req) {
-		for (Entry<String, String> entry : form.getTablesMap().entrySet()) {
-			System.out.println(entry.getKey() + ", " + entry.getValue());
-		}
 
 		ModelAndView mav = new ModelAndView();
 
@@ -310,22 +302,12 @@ public class IndexController {
 			
 			Map<String, String> tablesMap = form.getTablesMap();
 			
-			System.out.println("--ANTES--");
-			printDBTableList(sessionTableList);
-			System.out.println("--/ANTES--");
-
 			
 			// Update selected tables in session object
 			for(DBTable t: sessionTableList){
 				t.update(tablesMap.get(t.getName()));
 			}
 			
-//			Thread.currentThread().sleep(1000);//sleep for 1000 ms.
-			
-			System.out.println("--DESPUES--");
-			printDBTableList(sessionTableList);
-			System.out.println("--/DESPUES--");
-
 			for(DBTable t: sessionTableList){
 				System.out.println("Session table: " + t.getName());
 				Map<String, List<DBColumn>> tableDBFieldsMap = new HashMap<String, List<DBColumn>>();
@@ -342,7 +324,6 @@ public class IndexController {
 				List<DBColumn> columns = table.getColumns();
 				
 				for (DBColumn dbcol : t.getColumns()) {
-					System.out.println("\t col: " + dbcol.getName());
 					tableDBFieldsMap.put(dbcol.getName(), columns);
 				}
 				
@@ -386,13 +367,13 @@ public class IndexController {
 		}
 		
 		try {
-			SchemaTablesUpdater.putTables(userSelectedTablesList, (MultiDim) req.getSession().getAttribute("originalMultidim"), "out/out.xml");
+			SchemaTablesUpdater.putTables(userSelectedTablesList, (MultiDim) req.getSession().getAttribute("originalMultidim"), myFileNameOut);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
 		XmlConverter xml = new XmlConverter();
-		FileInputStream inputStream = new FileInputStream("out/out.xml");
+		FileInputStream inputStream = new FileInputStream(myFileNameOut);
 		String everything = "";
 		try {
 			everything = IOUtils.toString(inputStream);
@@ -460,30 +441,16 @@ public class IndexController {
 	protected ModelAndView getOutputXML(HttpServletRequest req,
 			HttpServletResponse response) throws IOException, InterruptedException {
 		
-		final ConnectionManager connectionManager = ConnectionManagerPostgreWithCredentials
-				.getConnectionManagerWithCredentials();
+		response.setHeader("Content-Disposition", "attachment;filename=out.xml");
+		response.setContentType("text/xml");
 
-		if (connectionManager == null) {
-			ModelAndView errorMav = new ModelAndView("error/error");
-			errorMav.addObject("errorDescription", "Acceso no autorizado.");
-			errorMav.addObject(
-					"errorMessage",
-					"No deberia entrar a este sitio sin antes tener abierta la conexion con la base de datos.");
-			errorMav.addObject("errorCode", "403");
-			return errorMav;
-		}
-		
-		String file = "out.xml";
-		response.setHeader("Content-Disposition", "attachment;filename=" + file);
-		response.setContentType("text/plain");
-
-		File down_file = new File("out/" + file);
+		File down_file = myFile;
 		FileInputStream fileIn = new FileInputStream(down_file);
 		
 		IOUtils.copy(fileIn, response.getOutputStream());
 		
-//		Thread.currentThread().sleep(1000);//sleep for 1000 ms
 		response.flushBuffer();
+		Thread.currentThread().sleep(1000);//sleep for 1000 ms
 		return null;
 	}
 }

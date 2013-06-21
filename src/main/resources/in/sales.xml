@@ -1,0 +1,57 @@
+<multidim>
+
+	<dimension name="gender">
+		<level>
+			<property ID="true" type="string">gender</property>
+		</level>
+	</dimension>
+
+	<dimension name="age">
+		<level>
+			<property ID="true" type="numeric">years</property>
+		</level>
+		<hierarchy name="age_categories">
+			<level name="Decade_born" pos="1">
+				<property ID="true" type="numeric">decade</property>				
+			</level>
+			<level name="Age_group" pos="2">
+				<property ID="true" type="String">denomination</property>
+			</level>
+		</hierarchy>
+	</dimension>
+
+	<dimension name="time">
+		<level>
+			<property ID="true" type="timestamp">day</property>
+		</level>
+		<hierarchy name="traditional_calendar">
+			<level name="Month" pos="1">
+				<property type="string">name</property>
+				<property ID="true" type="numeric">number</property>
+			</level>
+			<level name="Year" pos="2">
+				<property ID="true" type="numeric">year</property>
+			</level>
+		</hierarchy>
+		<hierarchy name="alternative_calendar">
+			<level name="Week" pos="1">
+				<property ID="true" type="numeric">number</property>
+			</level>
+			<level name="Quarter" pos="2">
+				<property ID="true" type="numeric">number</property>
+			</level>
+			<level name="Decade" pos="3">
+				<property ID="true" type="numeric">decade</property>
+			</level>
+		</hierarchy>
+	</dimension>
+
+	<cubo name="sales">
+		<measure name="unit_sales" type="numeric" agg="sum" />
+		<measure name="store_sales" type="numeric" agg="sum" />
+		<measure name="store_cost" type="numeric" agg="sum" />
+		<dimension name="gender" ptr="gender" />
+		<dimension name="age" ptr="age" />
+		<dimension name="time" ptr="time" />
+	</cubo>
+</multidim>

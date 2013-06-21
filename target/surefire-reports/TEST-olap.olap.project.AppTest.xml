@@ -1,68 +1,67 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite failures="0" time="0.024" errors="0" skipped="0" tests="1" name="olap.olap.project.AppTest">
+<testsuite failures="0" time="0.013" errors="0" skipped="0" tests="1" name="olap.olap.project.AppTest">
   <properties>
     <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
-    <property name="sun.boot.library.path" value="/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Libraries"/>
-    <property name="java.vm.version" value="20.45-b01-451"/>
-    <property name="awt.nativeDoubleBuffering" value="true"/>
+    <property name="sun.boot.library.path" value="/Library/Java/JavaVirtualMachines/jdk1.7.0_07.jdk/Contents/Home/jre/lib"/>
+    <property name="java.vm.version" value="23.3-b01"/>
+    <property name="user.country.format" value="AR"/>
     <property name="gopherProxySet" value="false"/>
-    <property name="mrj.build" value="11M4406"/>
-    <property name="java.vm.vendor" value="Apple Inc."/>
-    <property name="java.vendor.url" value="http://www.apple.com/"/>
+    <property name="java.vm.vendor" value="Oracle Corporation"/>
+    <property name="java.vendor.url" value="http://java.oracle.com/"/>
     <property name="path.separator" value=":"/>
-    <property name="guice.disable.misplaced.annotation.check" value="true"/>
     <property name="java.vm.name" value="Java HotSpot(TM) 64-Bit Server VM"/>
     <property name="file.encoding.pkg" value="sun.io"/>
     <property name="user.country" value="US"/>
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="sun.os.patch.level" value="unknown"/>
     <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
-    <property name="user.dir" value="/Users/jose/Documents/workspace/olap.project"/>
-    <property name="java.runtime.version" value="1.6.0_45-b06-451-11M4406"/>
-    <property name="java.awt.graphicsenv" value="apple.awt.CGraphicsEnvironment"/>
-    <property name="java.endorsed.dirs" value="/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Home/lib/endorsed"/>
+    <property name="user.dir" value="/Users/alankarpovsky/Desktop/GIT/Olap-Grupo3"/>
+    <property name="java.runtime.version" value="1.7.0_07-b10"/>
+    <property name="java.awt.graphicsenv" value="sun.awt.CGraphicsEnvironment"/>
+    <property name="basedir" value="/Users/alankarpovsky/Desktop/GIT/Olap-Grupo3"/>
+    <property name="java.endorsed.dirs" value="/Library/Java/JavaVirtualMachines/jdk1.7.0_07.jdk/Contents/Home/jre/lib/endorsed"/>
     <property name="os.arch" value="x86_64"/>
-    <property name="java.io.tmpdir" value="/var/folders/kn/s3j6k7z92p30ty95zytc47k80000gn/T/"/>
+    <property name="surefire.real.class.path" value="/Users/alankarpovsky/Desktop/GIT/Olap-Grupo3/target/surefire/surefirebooter8970907961689289113.jar"/>
+    <property name="java.io.tmpdir" value="/var/folders/dw/z7bl0gcx0095tntzgsmr4p580000gn/T/"/>
     <property name="line.separator" value="
 "/>
-    <property name="java.vm.specification.vendor" value="Sun Microsystems Inc."/>
+    <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
     <property name="os.name" value="Mac OS X"/>
-    <property name="classworlds.conf" value="/Users/jose/Documents/workspace/.metadata/.plugins/org.eclipse.m2e.core/launches/m2conf4815396948262294368.tmp"/>
-    <property name="sun.jnu.encoding" value="MacRoman"/>
-    <property name="java.library.path" value=".:/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java"/>
+    <property name="sun.jnu.encoding" value="UTF-8"/>
+    <property name="java.library.path" value="/Users/alankarpovsky/Library/Java/Extensions:/Library/Java/Extensions:/Network/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java:."/>
+    <property name="surefire.test.class.path" value="/Users/alankarpovsky/Desktop/GIT/Olap-Grupo3/target/test-classes:/Users/alankarpovsky/Desktop/GIT/Olap-Grupo3/target/classes:/Users/alankarpovsky/.m2/repository/junit/junit/3.8.1/junit-3.8.1.jar:/Users/alankarpovsky/.m2/repository/dom4j/dom4j/1.6.1/dom4j-1.6.1.jar:/Users/alankarpovsky/.m2/repository/xml-apis/xml-apis/1.0.b2/xml-apis-1.0.b2.jar:/Users/alankarpovsky/.m2/repository/org/simpleframework/simple-xml/2.7/simple-xml-2.7.jar:/Users/alankarpovsky/.m2/repository/stax/stax-api/1.0.1/stax-api-1.0.1.jar:/Users/alankarpovsky/.m2/repository/stax/stax/1.2.0/stax-1.2.0.jar:/Users/alankarpovsky/.m2/repository/xpp3/xpp3/1.1.3.3/xpp3-1.1.3.3.jar:/Users/alankarpovsky/.m2/repository/javax/servlet/servlet-api/2.5/servlet-api-2.5.jar:/Users/alankarpovsky/.m2/repository/javax/servlet/jstl/1.2/jstl-1.2.jar:/Users/alankarpovsky/.m2/repository/commons-fileupload/commons-fileupload/1.2.2/commons-fileupload-1.2.2.jar:/Users/alankarpovsky/.m2/repository/commons-io/commons-io/2.1/commons-io-2.1.jar:/Users/alankarpovsky/.m2/repository/org/mortbay/jetty/jetty/6.1.22/jetty-6.1.22.jar:/Users/alankarpovsky/.m2/repository/org/mortbay/jetty/jetty-util/6.1.22/jetty-util-6.1.22.jar:/Users/alankarpovsky/.m2/repository/org/mortbay/jetty/servlet-api/2.5-20081211/servlet-api-2.5-20081211.jar:/Users/alankarpovsky/.m2/repository/org/mortbay/jetty/jsp-2.1/6.1.14/jsp-2.1-6.1.14.jar:/Users/alankarpovsky/.m2/repository/org/eclipse/jdt/core/3.1.1/core-3.1.1.jar:/Users/alankarpovsky/.m2/repository/org/mortbay/jetty/jsp-api-2.1/6.1.14/jsp-api-2.1-6.1.14.jar:/Users/alankarpovsky/.m2/repository/org/mortbay/jetty/servlet-api-2.5/6.1.14/servlet-api-2.5-6.1.14.jar:/Users/alankarpovsky/.m2/repository/ant/ant/1.6.5/ant-1.6.5.jar:/Users/alankarpovsky/.m2/repository/org/springframework/spring-webmvc/3.0.2.RELEASE/spring-webmvc-3.0.2.RELEASE.jar:/Users/alankarpovsky/.m2/repository/org/springframework/spring-asm/3.0.2.RELEASE/spring-asm-3.0.2.RELEASE.jar:/Users/alankarpovsky/.m2/repository/org/springframework/spring-beans/3.0.2.RELEASE/spring-beans-3.0.2.RELEASE.jar:/Users/alankarpovsky/.m2/repository/org/springframework/spring-context/3.0.2.RELEASE/spring-context-3.0.2.RELEASE.jar:/Users/alankarpovsky/.m2/repository/org/springframework/spring-aop/3.0.2.RELEASE/spring-aop-3.0.2.RELEASE.jar:/Users/alankarpovsky/.m2/repository/org/springframework/spring-context-support/3.0.2.RELEASE/spring-context-support-3.0.2.RELEASE.jar:/Users/alankarpovsky/.m2/repository/org/springframework/spring-core/3.0.2.RELEASE/spring-core-3.0.2.RELEASE.jar:/Users/alankarpovsky/.m2/repository/commons-logging/commons-logging/1.1.1/commons-logging-1.1.1.jar:/Users/alankarpovsky/.m2/repository/org/springframework/spring-expression/3.0.2.RELEASE/spring-expression-3.0.2.RELEASE.jar:/Users/alankarpovsky/.m2/repository/org/springframework/spring-web/3.0.2.RELEASE/spring-web-3.0.2.RELEASE.jar:/Users/alankarpovsky/.m2/repository/aopalliance/aopalliance/1.0/aopalliance-1.0.jar:/Users/alankarpovsky/.m2/repository/hsqldb/hsqldb/1.8.0.7/hsqldb-1.8.0.7.jar:/Users/alankarpovsky/.m2/repository/javax/transaction/jta/1.1/jta-1.1.jar:/Users/alankarpovsky/.m2/repository/commons-dbcp/commons-dbcp/1.2.2/commons-dbcp-1.2.2.jar:/Users/alankarpovsky/.m2/repository/commons-pool/commons-pool/1.3/commons-pool-1.3.jar:/Users/alankarpovsky/.m2/repository/org/springframework/spring-test/3.0.0.RELEASE/spring-test-3.0.0.RELEASE.jar:/Users/alankarpovsky/.m2/repository/org/springframework/spring-orm/3.0.2.RELEASE/spring-orm-3.0.2.RELEASE.jar:/Users/alankarpovsky/.m2/repository/org/springframework/spring-jdbc/3.0.2.RELEASE/spring-jdbc-3.0.2.RELEASE.jar:/Users/alankarpovsky/.m2/repository/org/springframework/spring-tx/3.0.2.RELEASE/spring-tx-3.0.2.RELEASE.jar:/Users/alankarpovsky/.m2/repository/postgresql/postgresql/9.0-801.jdbc4/postgresql-9.0-801.jdbc4.jar:/Users/alankarpovsky/.m2/repository/commons-collections/commons-collections/3.0/commons-collections-3.0.jar:"/>
     <property name="java.specification.name" value="Java Platform API Specification"/>
-    <property name="java.class.version" value="50.0"/>
+    <property name="java.class.version" value="51.0"/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
-    <property name="os.version" value="10.8.3"/>
+    <property name="os.version" value="10.8.2"/>
     <property name="http.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
-    <property name="user.home" value="/Users/jose"/>
-    <property name="user.timezone" value="GMT-03:00"/>
-    <property name="java.awt.printerjob" value="apple.awt.CPrinterJob"/>
-    <property name="java.specification.version" value="1.6"/>
-    <property name="file.encoding" value="MacRoman"/>
-    <property name="user.name" value="jose"/>
-    <property name="java.class.path" value="/Applications/eclipse/configuration/org.eclipse.osgi/bundles/823/1/.cp/jars/plexus-classworlds-2.4.jar"/>
-    <property name="java.vm.specification.version" value="1.0"/>
+    <property name="user.home" value="/Users/alankarpovsky"/>
+    <property name="user.timezone" value=""/>
+    <property name="java.awt.printerjob" value="sun.lwawt.macosx.CPrinterJob"/>
+    <property name="java.specification.version" value="1.7"/>
+    <property name="file.encoding" value="UTF-8"/>
+    <property name="user.name" value="alankarpovsky"/>
+    <property name="java.class.path" value="/Users/alankarpovsky/Desktop/GIT/Olap-Grupo3/target/test-classes:/Users/alankarpovsky/Desktop/GIT/Olap-Grupo3/target/classes:/Users/alankarpovsky/.m2/repository/junit/junit/3.8.1/junit-3.8.1.jar:/Users/alankarpovsky/.m2/repository/dom4j/dom4j/1.6.1/dom4j-1.6.1.jar:/Users/alankarpovsky/.m2/repository/xml-apis/xml-apis/1.0.b2/xml-apis-1.0.b2.jar:/Users/alankarpovsky/.m2/repository/org/simpleframework/simple-xml/2.7/simple-xml-2.7.jar:/Users/alankarpovsky/.m2/repository/stax/stax-api/1.0.1/stax-api-1.0.1.jar:/Users/alankarpovsky/.m2/repository/stax/stax/1.2.0/stax-1.2.0.jar:/Users/alankarpovsky/.m2/repository/xpp3/xpp3/1.1.3.3/xpp3-1.1.3.3.jar:/Users/alankarpovsky/.m2/repository/javax/servlet/servlet-api/2.5/servlet-api-2.5.jar:/Users/alankarpovsky/.m2/repository/javax/servlet/jstl/1.2/jstl-1.2.jar:/Users/alankarpovsky/.m2/repository/commons-fileupload/commons-fileupload/1.2.2/commons-fileupload-1.2.2.jar:/Users/alankarpovsky/.m2/repository/commons-io/commons-io/2.1/commons-io-2.1.jar:/Users/alankarpovsky/.m2/repository/org/mortbay/jetty/jetty/6.1.22/jetty-6.1.22.jar:/Users/alankarpovsky/.m2/repository/org/mortbay/jetty/jetty-util/6.1.22/jetty-util-6.1.22.jar:/Users/alankarpovsky/.m2/repository/org/mortbay/jetty/servlet-api/2.5-20081211/servlet-api-2.5-20081211.jar:/Users/alankarpovsky/.m2/repository/org/mortbay/jetty/jsp-2.1/6.1.14/jsp-2.1-6.1.14.jar:/Users/alankarpovsky/.m2/repository/org/eclipse/jdt/core/3.1.1/core-3.1.1.jar:/Users/alankarpovsky/.m2/repository/org/mortbay/jetty/jsp-api-2.1/6.1.14/jsp-api-2.1-6.1.14.jar:/Users/alankarpovsky/.m2/repository/org/mortbay/jetty/servlet-api-2.5/6.1.14/servlet-api-2.5-6.1.14.jar:/Users/alankarpovsky/.m2/repository/ant/ant/1.6.5/ant-1.6.5.jar:/Users/alankarpovsky/.m2/repository/org/springframework/spring-webmvc/3.0.2.RELEASE/spring-webmvc-3.0.2.RELEASE.jar:/Users/alankarpovsky/.m2/repository/org/springframework/spring-asm/3.0.2.RELEASE/spring-asm-3.0.2.RELEASE.jar:/Users/alankarpovsky/.m2/repository/org/springframework/spring-beans/3.0.2.RELEASE/spring-beans-3.0.2.RELEASE.jar:/Users/alankarpovsky/.m2/repository/org/springframework/spring-context/3.0.2.RELEASE/spring-context-3.0.2.RELEASE.jar:/Users/alankarpovsky/.m2/repository/org/springframework/spring-aop/3.0.2.RELEASE/spring-aop-3.0.2.RELEASE.jar:/Users/alankarpovsky/.m2/repository/org/springframework/spring-context-support/3.0.2.RELEASE/spring-context-support-3.0.2.RELEASE.jar:/Users/alankarpovsky/.m2/repository/org/springframework/spring-core/3.0.2.RELEASE/spring-core-3.0.2.RELEASE.jar:/Users/alankarpovsky/.m2/repository/commons-logging/commons-logging/1.1.1/commons-logging-1.1.1.jar:/Users/alankarpovsky/.m2/repository/org/springframework/spring-expression/3.0.2.RELEASE/spring-expression-3.0.2.RELEASE.jar:/Users/alankarpovsky/.m2/repository/org/springframework/spring-web/3.0.2.RELEASE/spring-web-3.0.2.RELEASE.jar:/Users/alankarpovsky/.m2/repository/aopalliance/aopalliance/1.0/aopalliance-1.0.jar:/Users/alankarpovsky/.m2/repository/hsqldb/hsqldb/1.8.0.7/hsqldb-1.8.0.7.jar:/Users/alankarpovsky/.m2/repository/javax/transaction/jta/1.1/jta-1.1.jar:/Users/alankarpovsky/.m2/repository/commons-dbcp/commons-dbcp/1.2.2/commons-dbcp-1.2.2.jar:/Users/alankarpovsky/.m2/repository/commons-pool/commons-pool/1.3/commons-pool-1.3.jar:/Users/alankarpovsky/.m2/repository/org/springframework/spring-test/3.0.0.RELEASE/spring-test-3.0.0.RELEASE.jar:/Users/alankarpovsky/.m2/repository/org/springframework/spring-orm/3.0.2.RELEASE/spring-orm-3.0.2.RELEASE.jar:/Users/alankarpovsky/.m2/repository/org/springframework/spring-jdbc/3.0.2.RELEASE/spring-jdbc-3.0.2.RELEASE.jar:/Users/alankarpovsky/.m2/repository/org/springframework/spring-tx/3.0.2.RELEASE/spring-tx-3.0.2.RELEASE.jar:/Users/alankarpovsky/.m2/repository/postgresql/postgresql/9.0-801.jdbc4/postgresql-9.0-801.jdbc4.jar:/Users/alankarpovsky/.m2/repository/commons-collections/commons-collections/3.0/commons-collections-3.0.jar:"/>
+    <property name="java.vm.specification.version" value="1.7"/>
     <property name="sun.arch.data.model" value="64"/>
-    <property name="java.home" value="/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Home"/>
-    <property name="sun.java.command" value="org.codehaus.plexus.classworlds.launcher.Launcher -B install"/>
-    <property name="java.specification.vendor" value="Sun Microsystems Inc."/>
+    <property name="java.home" value="/Library/Java/JavaVirtualMachines/jdk1.7.0_07.jdk/Contents/Home/jre"/>
+    <property name="sun.java.command" value="/Users/alankarpovsky/Desktop/GIT/Olap-Grupo3/target/surefire/surefirebooter8970907961689289113.jar /Users/alankarpovsky/Desktop/GIT/Olap-Grupo3/target/surefire/surefire5069012094774390542tmp /Users/alankarpovsky/Desktop/GIT/Olap-Grupo3/target/surefire/surefire1575028603390969437tmp"/>
+    <property name="java.specification.vendor" value="Oracle Corporation"/>
     <property name="user.language" value="en"/>
-    <property name="awt.toolkit" value="apple.awt.CToolkit"/>
+    <property name="awt.toolkit" value="sun.lwawt.macosx.LWCToolkit"/>
     <property name="java.vm.info" value="mixed mode"/>
-    <property name="java.version" value="1.6.0_45"/>
-    <property name="java.ext.dirs" value="/Library/Java/Extensions:/System/Library/Java/Extensions:/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Home/lib/ext"/>
-    <property name="sun.boot.class.path" value="/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Classes/jsfd.jar:/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Classes/classes.jar:/System/Library/Frameworks/JavaVM.framework/Frameworks/JavaRuntimeSupport.framework/Resources/Java/JavaRuntimeSupport.jar:/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Classes/ui.jar:/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Classes/laf.jar:/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Classes/sunrsasign.jar:/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Classes/jsse.jar:/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Classes/jce.jar:/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Classes/charsets.jar"/>
-    <property name="java.vendor" value="Apple Inc."/>
-    <property name="maven.home" value="/Users/jose/Documents/workspace/olap.project/EMBEDDED"/>
+    <property name="java.version" value="1.7.0_07"/>
+    <property name="java.ext.dirs" value="/Users/alankarpovsky/Library/Java/Extensions:/Library/Java/JavaVirtualMachines/jdk1.7.0_07.jdk/Contents/Home/jre/lib/ext:/Library/Java/Extensions:/Network/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java"/>
+    <property name="sun.boot.class.path" value="/Library/Java/JavaVirtualMachines/jdk1.7.0_07.jdk/Contents/Home/jre/lib/resources.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_07.jdk/Contents/Home/jre/lib/rt.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_07.jdk/Contents/Home/jre/lib/sunrsasign.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_07.jdk/Contents/Home/jre/lib/jsse.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_07.jdk/Contents/Home/jre/lib/jce.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_07.jdk/Contents/Home/jre/lib/charsets.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_07.jdk/Contents/Home/jre/lib/jfr.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_07.jdk/Contents/Home/jre/lib/JObjC.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_07.jdk/Contents/Home/jre/classes"/>
+    <property name="java.vendor" value="Oracle Corporation"/>
+    <property name="localRepository" value="/Users/alankarpovsky/.m2/repository"/>
     <property name="file.separator" value="/"/>
-    <property name="java.vendor.url.bug" value="http://bugreport.apple.com/"/>
+    <property name="java.vendor.url.bug" value="http://bugreport.sun.com/bugreport/"/>
     <property name="sun.cpu.endian" value="little"/>
-    <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
-    <property name="mrj.version" value="1070.1.6.0_45-451"/>
+    <property name="sun.io.unicode.encoding" value="UnicodeBig"/>
     <property name="socksNonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="sun.cpu.isalist" value=""/>
   </properties>
-  <testcase time="0.002" classname="olap.olap.project.AppTest" name="testApp"/>
+  <testcase time="0.001" classname="olap.olap.project.AppTest" name="testApp"/>
 </testsuite>

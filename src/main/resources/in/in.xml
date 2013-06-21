@@ -1,0 +1,21 @@
+<multidim>
+  <dimension name="Fabrica">
+    <level>
+      <property ID="true" type="numeric"> Lat </property>
+      <property type="numeric"> CantEmple </property>
+    </level>
+    <hierarchy name="Categoria">
+      <level name="Empresa" pos="1">
+        <property ID="true" type="string"> Nombre </property>
+      </level>
+    </hierarchy>
+    <hierarchy name="Geo location">
+      <level name="Pais" pos="2" >
+        <property ID="true" type="string"> nombre </property>
+      </level>
+    </hierarchy>
+  </dimension>
+  <cubo name="contaminacion">
+    <measure name="emision" type="numeric" agg="sum"/>
+  </cubo>
+</multidim>

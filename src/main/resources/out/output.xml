@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Schema SYSTEM "mondrian.dtd">
+<Schema name="contaminacion">
+	<Cube name="contaminacion" cache="true" enabled="true">
+		<Table name="contaminacion_fact" />
+		<Dimension name="inicio_temporal">
+			<Hierarchy name="calendar" hasAll="true" allMemberName="Allcalendar"
+				primaryKey="">
+				<Table name="inicio_temporal" />
+				<Level name="month" uniqueMembers="false" levelType="Regular"
+					hideMemberIf="Never">
+					<Property name="month_nombre" column="month_nombre_inicio_temporal"
+						type="string" />
+					<Property name="month_mes" column="month_mes_inicio_temporal"
+						type="numeric" />
+				</Level>
+				<Level name="year" uniqueMembers="false" levelType="Regular"
+					hideMemberIf="Never">
+					<Property name="year_anio" column="year_anio_inicio_temporal"
+						type="numeric" />
+					<Property name="year_esbisiesto" column="year_esbisiesto_inicio_temporal"
+						type="numeric" />
+				</Level>
+			</Hierarchy>
+		</Dimension>
+		<Dimension name="fin_temporal">
+			<Hierarchy name="calendar" hasAll="true" allMemberName="Allcalendar"
+				primaryKey="">
+				<Table name="fin_temporal" />
+				<Level name="month" uniqueMembers="false" levelType="Regular"
+					hideMemberIf="Never">
+					<Property name="month_nombre" column="month_nombre_fin_temporal"
+						type="string" />
+					<Property name="month_mes" column="month_mes_fin_temporal"
+						type="numeric" />
+				</Level>
+				<Level name="year" uniqueMembers="false" levelType="Regular"
+					hideMemberIf="Never">
+					<Property name="year_anio" column="year_anio_fin_temporal"
+						type="numeric" />
+					<Property name="year_esbisiesto" column="year_esbisiesto_fin_temporal"
+						type="numeric" />
+				</Level>
+			</Hierarchy>
+		</Dimension>
+		<Dimension name="fabrica_fabrica">
+			<Hierarchy name="geo location" hasAll="true" allMemberName="Allgeo location"
+				primaryKey="">
+				<Table name="fabrica_fabrica" />
+				<Level name="pais" uniqueMembers="false" levelType="Regular"
+					hideMemberIf="Never">
+					<Property name="pais_nombre" column="pais_nombre_fabrica_fabrica"
+						type="string" />
+					<Property name="pais_the_geom" column="pais_the_geom_fabrica_fabrica"
+						type="integer" />
+				</Level>
+				<Level name="ciudad" uniqueMembers="false" levelType="Regular"
+					hideMemberIf="Never">
+					<Property name="ciudad_nombre" column="ciudad_nombre_fabrica_fabrica"
+						type="string" />
+					<Property name="ciudad_poblacion" column="ciudad_poblacion_fabrica_fabrica"
+						type="numeric" />
+				</Level>
+			</Hierarchy>
+			<Hierarchy name="categoria" hasAll="true" allMemberName="Allcategoria"
+				primaryKey="">
+				<Table name="fabrica_fabrica" />
+				<Level name="empresa" uniqueMembers="false" levelType="Regular"
+					hideMemberIf="Never">
+					<Property name="empresa_factanual" column="empresa_factanual_fabrica_fabrica"
+						type="numeric" />
+					<Property name="empresa_nombre" column="empresa_nombre_fabrica_fabrica"
+						type="string" />
+				</Level>
+				<Level name="rubro" uniqueMembers="false" levelType="Regular"
+					hideMemberIf="Never">
+					<Property name="rubro_tipoid" column="rubro_tipoid_fabrica_fabrica"
+						type="numeric" />
+					<Property name="rubro_tipodesc" column="rubro_tipodesc_fabrica_fabrica"
+						type="string" />
+				</Level>
+			</Hierarchy>
+		</Dimension>
+		<Dimension name="sustanciadim_sustancia">
+			<Hierarchy name="" hasAll="true" allMemberName="Allsustanciadim_sustancia"
+				primaryKey="">
+				<Table name="sustanciadim_sustancia" />
+				<Level name="sustanciadim_sustancia" type="" uniqueMembers="false"
+					levelType="Regular" hideMemberIf="Never" column="">
+					<Property name="" column="" type="" />
+				</Level>
+			</Hierarchy>
+		</Dimension>
+		<Measure aggregator="sum" name="nube" column="nube" datatype="integer" />
+		<Measure aggregator="avg" name="emisionmala" column="emisionmala"
+			datatype="numeric" />
+		<Measure aggregator="sum" name="emision" column="emision"
+			datatype="numeric" />
+	</Cube>
+</Schema>

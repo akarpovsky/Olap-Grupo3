@@ -8,6 +8,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URISyntaxException;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -55,7 +57,6 @@ public class SchemaTablesUpdater {
 					.getNamedItem("name").getTextContent(),true);
 			NodeList dimensions = doc.getElementsByTagName("Dimension");
 			for (int i = 0; i < XmlConverter.foreignks.size(); i++) {
-				System.out.println("--->\t" + XmlConverter.foreignks.get(i).getName());
 				factTable.addColumn(XmlConverter.foreignks.get(i));
 			}
 			XmlConverter.foreignks.clear();
@@ -114,7 +115,7 @@ public class SchemaTablesUpdater {
 			inputStream2.close();
 		}
 		try {
-			everythingPretty = xml.getTransformedHtml(everything);
+				everythingPretty = xml.getTransformedHtml(everything);
 			File write_file = new File(fileNameOut);
 			FileOutputStream fileOut = new FileOutputStream(write_file);
 			fileOut.write(everythingPretty.getBytes());

@@ -158,7 +158,7 @@ public class MultidimCubeToMDXUtils {
 	public static void main(String[] args) throws DocumentException,
 	IOException {
 		XmlConverter xml = new XmlConverter();
-		MultiDim multiDim = xml.parse(new File("in/in2.xml"));
+		MultiDim multiDim = xml.parse(new File("in/transform.xslt"));
 		MultidimCubeToMDXUtils.convertToMDX(multiDim);
 }
 
