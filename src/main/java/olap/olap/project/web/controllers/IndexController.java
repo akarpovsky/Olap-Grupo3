@@ -233,7 +233,7 @@ public class IndexController {
 
 			} else { // Manual execution
 				
-				List<DBTable> userSelectedTablesList = SchemaTablesUpdater.getTables(xmlDocument);
+				List<DBTable> userSelectedTablesList = SchemaTablesUpdater.getTables(xmlDocument, "out/out.xml");
 				
 				mav2 = new ModelAndView("/index/select_db_table");
 				mav2.addObject("dburl", connectionManager.getConnectionString());

@@ -1,14 +1,22 @@
 package olap.olap.project.model;
 
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 
 public class Level {
 
 	private String name;
 	private int pos;
-	private Set<Property> properties = new HashSet<Property>();
+	private SortedSet<Property> properties = new TreeSet<Property>(new Comparator<Property>() {
+
+		public int compare(Property o1, Property o2) {
+			return o1.getName().compareTo(o2.getName());
+		}
+	});
 	
 	public Level(String name, int pos) {
 		super();
