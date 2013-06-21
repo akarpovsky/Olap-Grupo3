@@ -32,95 +32,17 @@ import olap.olap.project.model.db.DBColumn;
 import olap.olap.project.model.db.DBTable;
 
 public class SchemaTablesUpdater {
-	public static List<DBTable> getTables(MultiDim multiDim)
+	public static List<DBTable> getTables(MultiDim multiDim, String fileNameOut)
 			throws IOException, DocumentException {
 		List<DBTable> ret = new LinkedList<DBTable>();
 		XmlConverter xml = new XmlConverter();
-		String fileName = "out/out.xml";
-		xml.generateXml(multiDim, fileName);
+		xml.generateXml(multiDim, fileNameOut);
 
 		try {
 			DocumentBuilderFactory docFactory = DocumentBuilderFactory
 					.newInstance();
 			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-			Document doc = docBuilder.parse(fileName);
-			// Get the root element
-
-			// Get the staff element , it may not working if tag has spaces, or
-			// whatever weird characters in front...it's better to use
-			// getElementsByTagName() to get it directly.
-			// Node staff = company.getFirstChild();
-			NodeList tables = doc.getElementsByTagName("Table");
-			Node fTable = tables.item(0);
-			DBTable factTable = new DBTable(fTable.getAttributes()
-					.getNamedItem("name").getTextContent(),true);
-			NodeList dimensions = doc.getElementsByTagName("Dimension");
-			for (int i = 0; i < XmlConverter.foreignks.size(); i++) {
-				factTable.addColumn(XmlConverter.foreignks.get(i));
-			}
-			ret.add(factTable);
-			for (int i = 0; i < dimensions.getLength(); i++) {
-				Node dimension = dimensions.item(i);
-				DBTable table = new DBTable(dimension.getAttributes().getNamedItem("name").getNodeValue());
-				NodeList hierarchies = dimension.getChildNodes();
-				for (int j = 0; j < hierarchies.getLength(); j++) {
-					Node hierarchy = hierarchies.item(j);
-					NodeList children = hierarchy.getChildNodes();
-					for (int l = 0; l < children.getLength(); l++) {
-						Node level = children.item(l);
-						if (level.getNodeName().equals("Level")) {
-							NodeList properties = level.getChildNodes();
-							for (int k = 0; k < properties.getLength(); k++) {
-								Node property = properties.item(k);
-								NamedNodeMap atributes = property.getAttributes();
-								String name = atributes.getNamedItem("column").getNodeValue();
-								String type = atributes.getNamedItem("type").getNodeValue();
-								Boolean isPK = false;
-								table.addColumn(new DBColumn(name, type, isPK));
-							}
-						}
-					}
-
-				}
-
-				ret.add(table);
-			}
-
-			System.out.println("Done");
-
-		} catch (ParserConfigurationException pce) {
-			pce.printStackTrace();
-		} catch (IOException ioe) {
-			ioe.printStackTrace();
-		} catch (SAXException sae) {
-			sae.printStackTrace();
-		}
-
-		return ret;
-
-	}
-	
-	public static List<DBTable> getTables(String fileNameIn)
-			throws IOException, DocumentException {
-		List<DBTable> ret = new LinkedList<DBTable>();
-		XmlConverter xml = new XmlConverter();
-		String fileName = "out/out.xml";
-		FileInputStream inputStream = new FileInputStream(fileNameIn);
-		try {
-			String everything = IOUtils.toString(inputStream).toLowerCase();
-			FileOutputStream outputStream = new FileOutputStream("in/temp.xml");
-			IOUtils.write(everything, outputStream);
-		} finally {
-			inputStream.close();
-		}
-		MultiDim multiDim = xml.parse(new File("in/temp.xml"));
-		xml.generateXml(multiDim, fileName);
-
-		try {
-			DocumentBuilderFactory docFactory = DocumentBuilderFactory
-					.newInstance();
-			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-			Document doc = docBuilder.parse(fileName);
+			Document doc = docBuilder.parse(fileNameOut);
 			// Get the root element
 
 			// Get the staff element , it may not working if tag has spaces, or
@@ -183,13 +105,12 @@ public class SchemaTablesUpdater {
 
 		return ret;
 
-	}
 
-	public static List<DBTable> putTables(List<DBTable> newTables, String fileNameIn)
+	}
+	
+	public static List<DBTable> getTables(String fileNameIn, String fileNameOut)
 			throws IOException, DocumentException {
-		List<DBTable> ret = new LinkedList<DBTable>();
 		XmlConverter xml = new XmlConverter();
-		String fileName = "out/out.xml";
 		FileInputStream inputStream = new FileInputStream(fileNameIn);
 		try {
 			String everything = IOUtils.toString(inputStream).toLowerCase();
@@ -199,13 +120,37 @@ public class SchemaTablesUpdater {
 			inputStream.close();
 		}
 		MultiDim multiDim = xml.parse(new File("in/temp.xml"));
-		xml.generateXml(multiDim, fileName);
+		return getTables(multiDim,fileNameOut);
+
+	}
+
+	public static void putTables(List<DBTable> newTables, String fileNameIn, String fileNameOut)
+			throws IOException, DocumentException {
+		XmlConverter xml = new XmlConverter();
+		FileInputStream inputStream = new FileInputStream(fileNameIn);
+		try {
+			String everything = IOUtils.toString(inputStream).toLowerCase();
+			FileOutputStream outputStream = new FileOutputStream("in/temp.xml");
+			IOUtils.write(everything, outputStream);
+		} finally {
+			inputStream.close();
+		}
+		MultiDim multiDim = xml.parse(new File("in/temp.xml"));
+		putTables(newTables, multiDim, fileNameOut);
+
+	}
+	
+	public static void putTables(List<DBTable> newTables, MultiDim multiDim, String fileNameOut)
+			throws IOException, DocumentException {
+		List<DBTable> ret = new LinkedList<DBTable>();
+		XmlConverter xml = new XmlConverter();
+		xml.generateXml(multiDim, fileNameOut);
 
 		try {
 			DocumentBuilderFactory docFactory = DocumentBuilderFactory
 					.newInstance();
 			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-			Document doc = docBuilder.parse(fileName);
+			Document doc = docBuilder.parse(fileNameOut);
 			// Get the root element
 
 			DBTable factTable = null;
@@ -293,7 +238,7 @@ public class SchemaTablesUpdater {
 			TransformerFactory transformerFactory = TransformerFactory.newInstance();
 			Transformer transformer = transformerFactory.newTransformer();
 			DOMSource source = new DOMSource(doc);
-			StreamResult result = new StreamResult(new File(fileName));
+			StreamResult result = new StreamResult(new File(fileNameOut));
 			transformer.transform(source, result);
 			
 			System.out.println("Done");
@@ -312,13 +257,12 @@ public class SchemaTablesUpdater {
 			e.printStackTrace();
 		}
 
-		return ret;
 
 	}
 	
 	public static void main(String[] args) throws IOException,
 			DocumentException {
-		List<DBTable> tables = getTables("in/in2.xml");
+		List<DBTable> tables = getTables("in/in2.xml","out/out.xml");
 		for (DBTable table : tables) {
 			System.out.println("table:" + table.getName());
 			table.update(table.getName() + "_nueva");
@@ -329,7 +273,7 @@ public class SchemaTablesUpdater {
 			}
 			System.out.println("");
 		}
-		putTables(tables, "in/in2.xml");
+		putTables(tables, "in/in2.xml","out/out.xml");
 //		tables = getTables("in/in2.xml");
 //		for (DBTable table : tables) {
 //			System.out.println("table:" + table.getName());

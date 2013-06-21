@@ -8,12 +8,16 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Scanner;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
@@ -34,6 +38,8 @@ import olap.olap.project.model.Property;
 import olap.olap.project.model.db.DBColumn;
 import olap.olap.project.model.db.DBTable;
 
+import org.apache.commons.collections.ListUtils;
+import org.apache.commons.collections.SetUtils;
 import org.apache.commons.io.IOUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -139,6 +145,7 @@ public class XmlConverter {
 		}
 	}
 
+	
 	private void addHierarchiesToXml(Dimension dimension, Element dim,
 			String pk, String dimName, String pkType) {
 
