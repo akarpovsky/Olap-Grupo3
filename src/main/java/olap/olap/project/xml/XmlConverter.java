@@ -204,8 +204,10 @@ public class XmlConverter {
 		h.addAttribute("primaryKey", pk);
 		h.addElement("Table").addAttribute("name", dimName);
 		for (Level l : hierarchy.getLevels()) {
+			System.out.println("pos: "+ l.getPos());
 			handleLevel(h, l, dimName);
 		}
+		System.out.println("-------");
 	}
 
 	private void handleLevel(Element hierarchy, Level l, String dimName) {
@@ -338,29 +340,28 @@ public class XmlConverter {
 			IOException {
 		XmlConverter xml = new XmlConverter();
 
-//		FileInputStream inputStream = new FileInputStream("in/in2.xml");
-//		try {
-//			String everything = IOUtils.toString(inputStream).toLowerCase();
-//			FileOutputStream outputStream = new FileOutputStream("in/temp.xml");
-//			IOUtils.write(everything, outputStream);
-//		} finally {
-//			inputStream.close();
-//		}
-
-//		MultiDim multiDim = xml.parse(new File("in/temp.xml"));
-//		xml.generateXml(multiDim, "out/output.xml");
-		
-		FileInputStream inputStream = new FileInputStream("out/out.xml");
+		FileInputStream inputStream = new FileInputStream("in/in2.xml");
 		try {
 			String everything = IOUtils.toString(inputStream).toLowerCase();
-			try {
-				System.out.println(xml.getTransformedHtml(everything));
-			} catch (TransformerException e) {
-				e.printStackTrace();
-			}
+			FileOutputStream outputStream = new FileOutputStream("in/temp.xml");
+			IOUtils.write(everything, outputStream);
 		} finally {
 			inputStream.close();
 		}
+		MultiDim multiDim = xml.parse(new File("in/temp.xml"));
+		xml.generateXml(multiDim, "out/output.xml");
+		
+//		FileInputStream inputStream = new FileInputStream("out/out.xml");
+//		try {
+//			String everything = IOUtils.toString(inputStream).toLowerCase();
+//			try {
+//				System.out.println(xml.getTransformedHtml(everything));
+//			} catch (TransformerException e) {
+//				e.printStackTrace();
+//			}
+//		} finally {
+//			inputStream.close();
+//		}
 
 	}
 }

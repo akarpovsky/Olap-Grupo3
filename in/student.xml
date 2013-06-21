@@ -1,0 +1,63 @@
+<multidim>
+
+	<dimension name="subject">
+		<level>
+			<property ID="true" type="numeric">code</property>
+			<property type="string">name</property>
+		</level>
+		<hierarchy name="area">
+			<level name="subject_group" pos="1">
+				<property ID="true" type="String">name</property>
+			</level>
+			<level name="general_area" pos="2">
+				<property ID="true" type="String">name</property>
+			</level>
+		</hierarchy>
+		<hierarchy name="given_at">
+			<level name="campus" pos="1">
+				<property ID="true" type="String">name</property>
+			</level>
+			<level name="institution" pos="2">
+				<property ID="true" type="numeric">id</property>
+				<property type="string">name</property>
+			</level>
+			<level name="school_league" pos="3">
+				<property ID="true" type="String">name</property>
+			</level>
+		</hierarchy>
+	</dimension>
+
+	<dimension name="time">
+		<level>
+			<property ID="true" type="timestamp">day</property>
+		</level>
+		<hierarchy name="traditional_calendar">
+			<level name="Month" pos="1">
+				<property type="string">name</property>
+				<property ID="true" type="numeric">number</property>
+			</level>
+			<level name="Year" pos="2">
+				<property ID="true" type="numeric">year</property>
+			</level>
+		</hierarchy>
+		<hierarchy name="school_calendar">
+			<level name="Week" pos="1">
+				<property ID="true" type="numeric">number</property>
+			</level>
+			<level name="Semester" pos="2">
+				<property ID="true" type="numeric">number</property>
+			</level>
+			<level name="Year" pos="3">
+				<property ID="true" type="numeric">year</property>
+			</level>
+		</hierarchy>
+	</dimension>
+
+	<cubo name="student">
+		<measure name="grade_average" type="numeric" agg="avg" />
+		<measure name="times_absent" type="numeric" agg="sum" />
+		<measure name="times_disciplined" type="numeric" agg="sum" />
+		<dimension name="subject" ptr="subject" />
+		<dimension name="time" ptr="time" />
+	</cubo>
+</multidim>
