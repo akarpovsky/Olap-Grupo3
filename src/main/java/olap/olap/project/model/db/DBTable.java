@@ -43,8 +43,8 @@ public class DBTable {
 		this.oldName = oldName;
 	}
 	public void update(String newName){
-		oldName=name;
-		name=newName;
+		this.oldName=name;
+		this.name=newName;
 	}
 
 	public boolean isFactTable() {
@@ -53,5 +53,12 @@ public class DBTable {
 
 	public void setFactTable(boolean isFactTable) {
 		this.isFactTable = isFactTable;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if(obj == null)
+			return false;
+		return ((DBTable)obj).getName().equals(getName());
 	}
 }

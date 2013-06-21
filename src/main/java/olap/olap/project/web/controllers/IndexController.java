@@ -242,7 +242,9 @@ public class IndexController {
 				List<DBTable> existingDBTablesList = new ArrayList<DBTable>();
 
 //				List<String> userSelectedFieldList = Arrays.asList("Tabla 1", "Tabla 2", "Tabla 3");
+				
 				List<DBTable> userSelectedFieldList = userSelectedTablesList;
+				
 				try {
 					existingDBTablesList = DBUtils.getTablesInDB(conn);
 				} catch (SQLException e) {
@@ -252,6 +254,7 @@ public class IndexController {
 				mav2.addObject("existingDBTablesList", existingDBTablesList);
 				mav2.addObject("userSelectedFieldList", userSelectedFieldList);
 				mav2.addObject("tableSelectForm", f);
+				req.getSession().setAttribute("originalXMLDataList", userSelectedTablesList);
 
 			}
 
@@ -286,13 +289,30 @@ public class IndexController {
 			final Connection conn = connectionManager
 					.getConnectionWithCredentials();
 			mav.addObject("dburl", connectionManager.getConnectionString());
-
+			
 			Map<String, Map<String, List<DBColumn>>> userFieldToDBFieldMap = new HashMap<String, Map<String, List<DBColumn>>>();
-
+			
+			List<DBTable> userSelectedTablesList = (List<DBTable>) req.getSession().getAttribute("originalXMLDataList");
+			System.out.println("--PRE--");
+			printDBTableList(userSelectedTablesList);
+			System.out.println("--/PRE--");
+			
+			// Update selected tables in session object
+			for (Entry<String, String> entry : form.getTablesMap().entrySet()) {
+				Integer i = userSelectedTablesList.indexOf(new DBTable(entry.getKey()));
+				if(i != null && i != -1){
+					userSelectedTablesList.get(i).update(entry.getValue());
+				}else{
+					throw new Exception();
+				}
+				
+			}
+			System.out.println("--POST--");
+			printDBTableList(userSelectedTablesList);
+			System.out.println("--/POST--");
+			
 			for (Entry<String, String> entry : form.getTablesMap().entrySet()) {
 				Map<String, List<DBColumn>> tableDBFieldsMap = new HashMap<String, List<DBColumn>>();
-
-				System.out.println(entry.getKey() + ", " + entry.getValue());
 				DBTable table = DBUtils.getTableInDB(conn, entry.getValue());
 				if (table == null) {
 					errorMav.addObject("errorDescription", "Tabla inválida.");
@@ -301,7 +321,11 @@ public class IndexController {
 					errorMav.addObject("errorCode", "404");
 					return errorMav;
 				}
+				
+				
 				List<DBColumn> columns = table.getColumns();
+				
+				
 				// TODO: Aca hay que poner los fields del archivo para que el
 				// usuario elija
 				List<String> currentTableFields = Arrays.asList("field1",
@@ -313,6 +337,9 @@ public class IndexController {
 
 				userFieldToDBFieldMap.put(entry.getKey(), tableDBFieldsMap);
 			}
+			
+
+			
 			TableSelectForm f = new TableSelectForm();
 			mav.addObject("tableSelectForm", f);
 			mav.addObject("userFieldToDBFieldMap", userFieldToDBFieldMap);
@@ -322,6 +349,12 @@ public class IndexController {
 		}
 
 		return mav;
+	}
+	
+	private void printDBTableList(List<DBTable> dbtable){
+		for(DBTable t: dbtable){
+			System.out.println("DBTable: old == " + t.getOldName() + "  || new ==" + t.getName());
+		}
 	}
 
 	@RequestMapping(method = RequestMethod.POST)

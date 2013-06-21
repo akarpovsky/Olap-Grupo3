@@ -42,4 +42,11 @@ public class DBColumn {
 	public void setOldName(String oldName) {
 		this.oldName = oldName;
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if(obj == null)
+			return false;
+		return ((DBColumn)obj).getName().equals(getName());
+	}
 }
