@@ -27,7 +27,7 @@ public class MultidimCubeToMDXUtils {
         	throw new RuntimeException("Invalid or null connection provided.");
 		}
 		String tablesCreation = convertToMDX(multidim);
-		PreparedStatement statement = conn.prepareStatement(tablesCreation.replace("geometry", "integer"));
+		PreparedStatement statement = conn.prepareStatement(tablesCreation);
 		statement.execute();
 		return tablesCreation;
 		

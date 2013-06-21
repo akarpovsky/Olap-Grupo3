@@ -482,7 +482,7 @@ public class IndexController {
 		
 		IOUtils.copy(fileIn, response.getOutputStream());
 		
-		Thread.currentThread().sleep(1000);//sleep for 1000 ms
+//		Thread.currentThread().sleep(1000);//sleep for 1000 ms
 		response.flushBuffer();
 		return null;
 	}

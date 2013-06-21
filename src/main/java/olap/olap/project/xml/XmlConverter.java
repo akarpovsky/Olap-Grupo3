@@ -186,8 +186,8 @@ public class XmlConverter {
 		for (Measure m : multiDim.getCube().getMeasures()) {
 			Element measure = cubeElem.addElement("Measure");
 			String aggName = m.getAgg();
-			if (aggName.equals("st_union"))
-				aggName = "sum";
+//			if (aggName.equals("st_union"))
+//				aggName = "sum";
 			measure.addAttribute("aggregator", aggName);
 			measure.addAttribute("name", m.getName());
 			measure.addAttribute("column", m.getName());

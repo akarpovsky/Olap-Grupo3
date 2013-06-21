@@ -95,7 +95,6 @@ public class SchemaTablesUpdater {
 				ret.add(table);
 			}
 
-			System.out.println("Done");
 
 		} catch (ParserConfigurationException pce) {
 			pce.printStackTrace();
@@ -105,6 +104,24 @@ public class SchemaTablesUpdater {
 			sae.printStackTrace();
 		}
 
+		FileInputStream inputStream2 = new FileInputStream(
+				fileNameOut);
+		String everything = "";
+		String everythingPretty = "";
+		try {
+			everything = IOUtils.toString(inputStream2);
+		} finally {
+			inputStream2.close();
+		}
+		try {
+			everythingPretty = xml.getTransformedHtml(everything);
+			File write_file = new File(fileNameOut);
+			FileOutputStream fileOut = new FileOutputStream(write_file);
+			fileOut.write(everythingPretty.getBytes());
+		} catch (TransformerException e) {
+			e.printStackTrace();
+		}
+		
 		return ret;
 
 
@@ -243,8 +260,6 @@ public class SchemaTablesUpdater {
 			StreamResult result = new StreamResult(new File(fileNameOut));
 			transformer.transform(source, result);
 			
-			System.out.println("Done");
-
 		} catch (ParserConfigurationException pce) {
 			pce.printStackTrace();
 		} catch (IOException ioe) {
