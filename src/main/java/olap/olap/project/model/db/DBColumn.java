@@ -22,6 +22,9 @@ public class DBColumn {
 	public String getType(){
 		return this.type;
 	}
+	public void setType(String type){
+		this.type = type;
+	}
 
 	public boolean isPK(){
 		return this.isPK;
@@ -33,5 +36,9 @@ public class DBColumn {
 
 	public void setOldName(String oldName) {
 		this.oldName = oldName;
+	}
+	public void update(String newName){
+		oldName = name;
+		name = newName;
 	}
 }
