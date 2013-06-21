@@ -9,6 +9,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Scanner;
 
@@ -28,6 +31,8 @@ import olap.olap.project.model.Level;
 import olap.olap.project.model.Measure;
 import olap.olap.project.model.MultiDim;
 import olap.olap.project.model.Property;
+import olap.olap.project.model.db.DBColumn;
+import olap.olap.project.model.db.DBTable;
 
 import org.apache.commons.io.IOUtils;
 import org.dom4j.Document;
@@ -43,6 +48,7 @@ public class XmlConverter {
 	/**
 	 * Converts a xmlFile to a MultiDim
 	 */
+	public static List<DBColumn> foreignks = new LinkedList<DBColumn>();
 	public MultiDim parse(File xml) throws DocumentException, IOException {
 		MultiDim multiDim = new MultiDim();
 		SAXReader reader = new SAXReader();
@@ -85,7 +91,7 @@ public class XmlConverter {
 		// Element table = cubeElem.addElement("Table");
 
 		addMeasuresToXml(multiDim, cubeElem);
-	
+//		List<DBTable> tables = getTables(out);
 		XMLWriter writer = new XMLWriter(new FileWriter(fileName));
 		writer.write(out);
 		writer.close();
@@ -122,6 +128,7 @@ public class XmlConverter {
 					dim.addAttribute("foreignKey", pk);
 					pkType = Attribute.valueOf(p.getType().toUpperCase())
 							.toString();
+					foreignks.add(new DBColumn(pk, pkType, p.isPK()));
 					break; // Lo hace sólo para el primero, si es compuesta se
 							// debe cambiar.
 				}
