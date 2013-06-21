@@ -61,7 +61,7 @@ public class SchemaTablesUpdater {
 			NodeList tables = doc.getElementsByTagName("Table");
 			Node fTable = tables.item(0);
 			DBTable factTable = new DBTable(fTable.getAttributes()
-					.getNamedItem("name").getTextContent());
+					.getNamedItem("name").getTextContent(),true);
 			NodeList dimensions = doc.getElementsByTagName("Dimension");
 			for (int i = 0; i < XmlConverter.foreignks.size(); i++) {
 				factTable.addColumn(XmlConverter.foreignks.get(i));
