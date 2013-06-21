@@ -39,8 +39,8 @@
 								<div class="control-group">
 						            <label class="control-label" for="input01">${entry.key}</label>
 						            <div class="controls">
-											<form:select path="tablesMap['${entry.key}']" style="width:220%">
-												<form:options items="${entry.value}" itemValue="name" itemLabel="nameWithTypeAndPK"   />
+											<form:select path="tablesMap['${externalEntry.key}:${entry.key}']" style="width:220%">
+												<form:options items="${entry.value}" itemValue="name" itemLabel="nameWithTypeAndPK" />
 											</form:select>
 						            </div>
 					        	</div>

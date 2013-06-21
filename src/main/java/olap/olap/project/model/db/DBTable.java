@@ -61,4 +61,12 @@ public class DBTable {
 			return false;
 		return ((DBTable)obj).getName().equals(getName());
 	}
+
+	public void updateColumn(String original, String newValue) {
+		for(DBColumn c: getColumns()){
+			if(c.getName().equals(original)){
+				c.update(newValue);
+			}
+		}
+	}
 }

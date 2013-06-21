@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -293,27 +292,17 @@ public class IndexController {
 			Map<String, Map<String, List<DBColumn>>> userFieldToDBFieldMap = new HashMap<String, Map<String, List<DBColumn>>>();
 			
 			List<DBTable> userSelectedTablesList = (List<DBTable>) req.getSession().getAttribute("originalXMLDataList");
-			System.out.println("--PRE--");
-			printDBTableList(userSelectedTablesList);
-			System.out.println("--/PRE--");
+			
+			Map<String, String> tablesMap = form.getTablesMap();
 			
 			// Update selected tables in session object
-			for (Entry<String, String> entry : form.getTablesMap().entrySet()) {
-				Integer i = userSelectedTablesList.indexOf(new DBTable(entry.getKey()));
-				if(i != null && i != -1){
-					userSelectedTablesList.get(i).update(entry.getValue());
-				}else{
-					throw new Exception();
-				}
-				
+			for(DBTable t: userSelectedTablesList){
+				t.update(tablesMap.get(t.getName()));
 			}
-			System.out.println("--POST--");
-			printDBTableList(userSelectedTablesList);
-			System.out.println("--/POST--");
 			
-			for (Entry<String, String> entry : form.getTablesMap().entrySet()) {
+			for(DBTable t: userSelectedTablesList){
 				Map<String, List<DBColumn>> tableDBFieldsMap = new HashMap<String, List<DBColumn>>();
-				DBTable table = DBUtils.getTableInDB(conn, entry.getValue());
+				DBTable table = DBUtils.getTableInDB(conn, t.getName());
 				if (table == null) {
 					errorMav.addObject("errorDescription", "Tabla inválida.");
 					errorMav.addObject("errorMessage",
@@ -321,24 +310,16 @@ public class IndexController {
 					errorMav.addObject("errorCode", "404");
 					return errorMav;
 				}
-				
-				
 				List<DBColumn> columns = table.getColumns();
+				List<DBColumn> currentTableFields = columns;
 				
-				
-				// TODO: Aca hay que poner los fields del archivo para que el
-				// usuario elija
-				List<String> currentTableFields = Arrays.asList("field1",
-						"field2", "field3");
-
-				for (String f : currentTableFields) {
-					tableDBFieldsMap.put(entry.getKey() + ":" + f, columns);
+				for (DBColumn dbcol : t.getColumns()) {
+					tableDBFieldsMap.put(dbcol.getName(), columns);
 				}
-
-				userFieldToDBFieldMap.put(entry.getKey(), tableDBFieldsMap);
+				System.out.println("Pongo: " + t.getOldName());
+				userFieldToDBFieldMap.put(t.getOldName(), tableDBFieldsMap);
 			}
 			
-
 			
 			TableSelectForm f = new TableSelectForm();
 			mav.addObject("tableSelectForm", f);
@@ -353,17 +334,34 @@ public class IndexController {
 	
 	private void printDBTableList(List<DBTable> dbtable){
 		for(DBTable t: dbtable){
-			System.out.println("DBTable: old == " + t.getOldName() + "  || new ==" + t.getName());
+			System.out.println("(" +dbtable.indexOf(t)+ ") " + "DBTable: old == " + t.getOldName() + "  || new ==" + t.getName());
 		}
 	}
 
 	@RequestMapping(method = RequestMethod.POST)
 	public ModelAndView select_db_column(TableSelectForm form,
 			final HttpServletRequest req) {
-		for (Entry<String, String> entry : form.getTablesMap().entrySet()) {
-			System.out.println(entry.getKey() + " --> " + entry.getValue());
+
+		ModelAndView mav = new ModelAndView("/index/select_db_column");
+		
+		List<DBTable> userSelectedTablesList = (List<DBTable>) req.getSession().getAttribute("originalXMLDataList");
+		
+		Map<String, String> tablesMap = form.getTablesMap();
+		
+		for(Entry<String, String> t1: tablesMap.entrySet()){
+//			System.out.println("Itero por " + t1.getKey() + " split: " + t1.getKey().split(":")[0]);
+			for(DBTable t: userSelectedTablesList){
+//				System.out.println("Cambio: " + t1.getKey().split(":")[0] + " por " + t1.getKey().split(":")[1]);
+				if(t.getOldName().equals(t1.getKey().split(":")[0])){
+					t.updateColumn(t1.getKey().split(":")[1],t1.getValue());
+				}
+			}
 		}
-		return null;
+		
+		SchemaTablesUpdater stu = new SchemaTablesUpdater();
+		
+		
+		return mav;
 	}
 
 	@RequestMapping(method = RequestMethod.GET)
