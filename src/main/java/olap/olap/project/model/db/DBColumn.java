@@ -19,6 +19,14 @@ public class DBColumn {
 		return this.name;
 	}
 	
+	public String getNameWithTypeAndPK(){
+		if(isPK()){
+			return this.name + " ["+ getType() +"] " + " (PK)"; 
+		}
+		return this.name + " ["+ getType() +"] ";
+	}
+	
+	
 	public String getType(){
 		return this.type;
 	}
