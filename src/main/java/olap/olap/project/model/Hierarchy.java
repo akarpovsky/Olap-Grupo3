@@ -1,12 +1,22 @@
 package olap.olap.project.model;
 
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 public class Hierarchy {
 
 	private String name;
-	private Set<Level> levels = new HashSet<Level>();
+	private SortedSet<Level> levels = new TreeSet<Level>(new Comparator<Level>() {
+
+		public int compare(Level o1, Level o2) {
+			// TODO Auto-generated method stub
+			return o1.getPos()-o2.getPos();
+		}
+		
+	});
 	
 	public Hierarchy(String name) {
 		this.name = name;
@@ -20,7 +30,7 @@ public class Hierarchy {
 		return name;
 	}
 	
-	public Set<Level> getLevels() {
+	public SortedSet<Level> getLevels() {
 		return levels;
 	}
 	
